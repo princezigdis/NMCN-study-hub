@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* Dark mode follows the .dark class on <html> (set from the saved preference or the OS). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
+
+  /* Brand: deep clinical teal + warm amber accent */
+  --color-brand-50: #eefaf8;
+  --color-brand-100: #d5f2ee;
+  --color-brand-200: #ace4dc;
+  --color-brand-300: #78cfc4;
+  --color-brand-400: #43b2a6;
+  --color-brand-500: #23968b;
+  --color-brand-600: #157a71;
+  --color-brand-700: #0b5d57;
+  --color-brand-800: #0a4a46;
+  --color-brand-900: #083a37;
+  --color-accent-400: #f5b544;
+  --color-accent-500: #e59a1c;
+  --color-accent-600: #c27a0e;
+}
+
+:root {
+  --surface: #ffffff;
+  --surface-2: #f6f8f8;
+  --ink: #0f1f1e;
+  --ink-2: #4a5b5a;
+  --line: #e2e8e7;
+  color-scheme: light;
+}
+.dark {
+  --surface: #0f1716;
+  --surface-2: #162120;
+  --ink: #e8f0ef;
+  --ink-2: #9db0ae;
+  --line: #24312f;
+  color-scheme: dark;
+}
+
+html, body, #root { min-height: 100%; }
+body {
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.surface { background: var(--surface); }
+.surface-2 { background: var(--surface-2); }
+.ink-2 { color: var(--ink-2); }
+.line { border-color: var(--line); }
+
+:focus-visible { outline: 2px solid var(--color-brand-500); outline-offset: 2px; border-radius: 6px; }
+
+/* Reading view for notes */
+.prose-note { font-family: var(--font-serif); font-size: 1.075rem; line-height: 1.75; color: var(--ink); }
+.prose-note h1, .prose-note h2, .prose-note h3 { font-family: var(--font-sans); font-weight: 700; line-height: 1.3; margin: 1.6em 0 0.6em; }
+.prose-note h1 { font-size: 1.6rem; }
+.prose-note h2 { font-size: 1.3rem; }
+.prose-note h3 { font-size: 1.1rem; }
+.prose-note p, .prose-note ul, .prose-note ol, .prose-note blockquote, .prose-note table { margin: 0 0 1em; }
+.prose-note ul { list-style: disc; padding-left: 1.4em; }
+.prose-note ol { list-style: decimal; padding-left: 1.4em; }
+.prose-note li { margin: 0.25em 0; }
+.prose-note a { color: var(--color-brand-600); text-decoration: underline; }
+.prose-note strong { font-weight: 650; }
+.prose-note blockquote { border-left: 4px solid var(--color-accent-400); background: color-mix(in srgb, var(--color-accent-400) 10%, transparent); padding: 0.6em 1em; border-radius: 0 8px 8px 0; font-family: var(--font-sans); font-size: 0.95rem; }
+.prose-note table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 0.92rem; display: block; overflow-x: auto; }
+.prose-note th, .prose-note td { border: 1px solid var(--line); padding: 0.5em 0.7em; text-align: left; vertical-align: top; }
+.prose-note th { background: var(--surface-2); font-weight: 600; }
+.prose-note img { max-width: 100%; border-radius: 10px; margin: 1em auto; }
+.prose-note code { font-size: 0.9em; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; }
+.prose-note mark { background: color-mix(in srgb, var(--color-accent-400) 45%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+
+/* Compact markdown for AI answers and rationales */
+.prose-ai { font-size: 0.95rem; line-height: 1.6; }
+.prose-ai h1, .prose-ai h2, .prose-ai h3 { font-weight: 650; margin: 1em 0 0.4em; }
+.prose-ai p, .prose-ai ul, .prose-ai ol, .prose-ai table { margin: 0 0 0.75em; }
+.prose-ai ul { list-style: disc; padding-left: 1.25em; }
+.prose-ai ol { list-style: decimal; padding-left: 1.25em; }
+.prose-ai table { width: 100%; border-collapse: collapse; font-size: 0.88rem; display: block; overflow-x: auto; }
+.prose-ai th, .prose-ai td { border: 1px solid var(--line); padding: 0.35em 0.5em; text-align: left; vertical-align: top; }
+
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
