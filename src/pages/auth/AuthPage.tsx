@@ -54,7 +54,7 @@ export default function AuthPage() {
   return (
     <div className="grid grid-cols-1 min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 p-12 text-white lg:flex">
-        <div className="flex items-center gap-3"><img src="/favicon.svg" alt="" className="h-10 w-10" /><span className="text-xl font-bold">{APP_NAME}</span></div>
+        <div className="flex items-center gap-3"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-10 w-10" /><span className="text-xl font-bold">{APP_NAME}</span></div>
         <div>
           <h1 className="text-4xl font-bold leading-tight">Prepare for your NMCN exams with confidence.</h1>
           <ul className="mt-8 space-y-3 text-white/90">
@@ -70,7 +70,7 @@ export default function AuthPage() {
 
       <div className="flex items-center justify-center px-4 py-12">
         <form onSubmit={submit} className="w-full max-w-sm space-y-5">
-          <div className="lg:hidden"><img src="/favicon.svg" alt="" className="mb-4 h-10 w-10" /></div>
+          <div className="lg:hidden"><img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="mb-4 h-10 w-10" /></div>
           <div>
             <h2 className="text-2xl font-bold">{mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : "Reset your password"}</h2>
             <p className="ink-2 mt-1 text-sm">{mode === "signup" ? "Free to start — includes AI credits every month." : mode === "signin" ? "Sign in to continue studying." : "We'll email you a secure link."}</p>

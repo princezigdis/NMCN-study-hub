@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="surface fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r line lg:flex">
         <Link to="/" className="flex items-center gap-2 px-5 py-5">
-          <img src="/favicon.svg" alt="" className="h-8 w-8" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-8 w-8" />
           <span className="text-lg font-bold tracking-tight">{APP_NAME}</span>
         </Link>
         {programme && <div className="mx-5 mb-3 rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-800 dark:bg-brand-900/60 dark:text-brand-100">{programme.name} ({programme.code})</div>}
@@ -70,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Top bar */}
       <header className="surface sticky top-0 z-20 flex h-14 items-center gap-2 border-b line px-4">
         <Link to="/" className="flex items-center gap-2 lg:hidden">
-          <img src="/favicon.svg" alt="" className="h-7 w-7" /><span className="hidden whitespace-nowrap font-bold min-[420px]:inline">{APP_NAME}</span>
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-7 w-7" /><span className="hidden whitespace-nowrap font-bold min-[420px]:inline">{APP_NAME}</span>
         </Link>
         <div className="flex-1" />
         {wallet && (

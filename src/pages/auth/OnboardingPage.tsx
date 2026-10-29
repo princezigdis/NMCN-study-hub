@@ -33,7 +33,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-12">
-      <img src="/favicon.svg" alt="" className="mb-6 h-10 w-10" />
+      <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="mb-6 h-10 w-10" />
       <h1 className="text-2xl font-bold">Let's set up your study space</h1>
       <p className="ink-2 mt-1 text-sm">You can change these later in your profile.</p>
       <div className="mt-6 space-y-5">
