@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button, Card, Field, Input, PageHeader, Select, useToast } from "../../components/ui";
+import { BASE } from "../../lib/router";
 import { friendly } from "../../lib/errors";
 import { dateShort, naira, PRODUCT_LABEL } from "../../lib/format";
 import { supabase } from "../../lib/supabase";
@@ -70,7 +71,7 @@ export default function ProfilePage() {
         <h2 className="mb-2 font-semibold">Security</h2>
         <p className="ink-2 mb-3 text-sm">We'll email you a link to change your password.</p>
         <Button variant="secondary" onClick={async () => {
-          const { error } = await supabase.auth.resetPasswordForEmail(user!.email!, { redirectTo: `${window.location.origin}/reset-password` });
+          const { error } = await supabase.auth.resetPasswordForEmail(user!.email!, { redirectTo: `${window.location.origin}${BASE}/reset-password` });
           toast(error ? friendly(error) : "Check your email for the reset link", error ? "error" : "success");
         }}>Change password</Button>
       </Card>

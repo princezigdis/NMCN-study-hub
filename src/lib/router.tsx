@@ -25,8 +25,18 @@ interface RouterState {
 const RouterCtx = createContext<RouterState | null>(null);
 const ParamsCtx = createContext<Record<string, string>>({});
 
+/** Sub-path the site is served from ("" at a domain root, "/nmcn-study-hub" on a GitHub project page). */
+export const BASE: string = ((import.meta.env.BASE_URL as string | undefined) ?? "/").replace(/\/+$/, "");
+
+/** Prefix an in-app path ("/dashboard") with the base for hrefs and history entries. */
+export function withBase(to: string): string {
+  return to.startsWith("/") && !to.startsWith("//") ? `${BASE}${to}` : to;
+}
+
 function current() {
-  return { path: window.location.pathname || "/", search: window.location.search };
+  let path = window.location.pathname || "/";
+  if (BASE && (path === BASE || path.startsWith(`${BASE}/`))) path = path.slice(BASE.length) || "/";
+  return { path, search: window.location.search };
 }
 
 export function Router({ children }: { children: ReactNode }) {
@@ -43,8 +53,9 @@ export function Router({ children }: { children: ReactNode }) {
       window.location.assign(to);
       return;
     }
-    if (opts?.replace) window.history.replaceState(null, "", to);
-    else window.history.pushState(null, "", to);
+    const url = withBase(to);
+    if (opts?.replace) window.history.replaceState(null, "", url);
+    else window.history.pushState(null, "", url);
     setLoc(current());
     window.scrollTo({ top: 0 });
   }, []);
@@ -112,7 +123,7 @@ export function Link({ to, onClick, ...rest }: LinkProps) {
     e.preventDefault();
     navigate(to);
   };
-  return <a href={to} onClick={handle} {...rest} />;
+  return <a href={withBase(to)} onClick={handle} {...rest} />;
 }
 
 /** Link that knows whether it's active (exact or prefix match). */

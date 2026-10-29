@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
 import { Button, ErrorBox, Field, Input } from "../../components/ui";
 import { APP_NAME, supabase } from "../../lib/supabase";
-import { useNavigate, useSearchParams } from "../../lib/router";
+import { BASE, useNavigate, useSearchParams } from "../../lib/router";
 
 type Mode = "signin" | "signup" | "forgot";
 
@@ -34,12 +34,12 @@ export default function AuthPage() {
         if (password.length < 8) throw new Error("Use at least 8 characters for your password.");
         const { data, error } = await supabase.auth.signUp({
           email, password,
-          options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/onboarding` },
+          options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}${BASE}/onboarding` },
         });
         if (error) throw error;
         if (!data.session) setInfo("Check your email to confirm your account, then sign in.");
       } else {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}${BASE}/reset-password` });
         if (error) throw error;
         setInfo("If an account exists for that email, a reset link is on its way.");
       }
