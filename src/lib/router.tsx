@@ -35,7 +35,8 @@ export function withBase(to: string): string {
 
 function current() {
   let path = window.location.pathname || "/";
-  if (BASE && (path === BASE || path.startsWith(`${BASE}/`))) path = path.slice(BASE.length) || "/";
+  const lower = path.toLowerCase(), base = BASE.toLowerCase();
+  if (BASE && (lower === base || lower.startsWith(`${base}/`))) path = path.slice(BASE.length) || "/";
   return { path, search: window.location.search };
 }
 
