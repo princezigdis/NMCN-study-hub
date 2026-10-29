@@ -89,7 +89,6 @@ create table if not exists public.profiles (
 create index if not exists profiles_programme_idx on public.profiles(programme_id);
 create index if not exists profiles_email_trgm on public.profiles using gin (email gin_trgm_ops);
 create index if not exists profiles_name_trgm on public.profiles using gin (full_name gin_trgm_ops);
-drop trigger if exists profiles_updated on public.profiles;
 create or replace trigger profiles_updated before update on public.profiles
   for each row execute function public.tg_set_updated_at();
 
@@ -300,7 +299,6 @@ begin
   if new.author_id is null then new.author_id := auth.uid(); end if;
   return new;
 end $$;
-drop trigger if exists note_versions_number on public.note_versions;
 create or replace trigger note_versions_number before insert on public.note_versions
   for each row execute function public.tg_note_version_number();
 
@@ -313,7 +311,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists note_versions_immutable on public.note_versions;
 create or replace trigger note_versions_immutable before update on public.note_versions
   for each row execute function public.tg_note_version_immutable();
 
@@ -434,7 +431,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists pool_item_bank_match on public.question_pool_items;
 create or replace trigger pool_item_bank_match before insert or update on public.question_pool_items
   for each row execute function public.tg_pool_item_bank_match();
 
@@ -475,10 +471,13 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists question_publish_guard on public.questions;
-create constraint trigger question_publish_guard after insert or update of status on public.questions
-  deferrable initially deferred
-  for each row execute function public.tg_question_publish_guard();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'question_publish_guard' and tgrelid = 'public.questions'::regclass) then
+    create constraint trigger question_publish_guard after insert or update of status on public.questions
+      deferrable initially deferred
+      for each row execute function public.tg_question_publish_guard();
+  end if;
+end $$;
 
 reset search_path;
 
@@ -563,7 +562,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists paper_pool_bank on public.exam_papers;
 create or replace trigger paper_pool_bank before insert or update on public.exam_papers
   for each row execute function public.tg_paper_pool_bank();
 
@@ -1347,7 +1345,6 @@ returns trigger language plpgsql as $$
 begin
   raise exception 'audit_logs_are_append_only';
 end $$;
-drop trigger if exists audit_logs_immutable on public.audit_logs;
 create or replace trigger audit_logs_immutable before update or delete on public.audit_logs
   for each row execute function public.tg_audit_immutable();
 
@@ -1385,8 +1382,7 @@ begin
     'user_roles','role_permissions','entitlements','ai_subscriptions','products','ai_plans',
     'ai_action_costs','app_settings','feature_flags','refunds','exam_configs','exam_papers'
   ] loop
-    execute format('drop trigger if exists audit_%1$s on public.%1$I', t);
-    execute format('create trigger audit_%1$s after insert or update or delete on public.%1$I
+    execute format('create or replace trigger audit_%1$s after insert or update or delete on public.%1$I
                     for each row execute function public.tg_audit_row()', t);
   end loop;
 end $$;
@@ -1401,7 +1397,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists audit_profile_status on public.profiles;
 create or replace trigger audit_profile_status after update of status on public.profiles
   for each row execute function public.tg_audit_profile_status();
 
@@ -1459,7 +1454,6 @@ begin
   insert into public.credit_wallets(user_id) values (new.id) on conflict do nothing;
   return new;
 end $$;
-drop trigger if exists on_auth_user_created on auth.users;
 create or replace trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
@@ -1471,7 +1465,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists on_auth_user_email on auth.users;
 create or replace trigger on_auth_user_email after update of email on auth.users
   for each row execute function public.handle_user_email_change();
 
@@ -2651,11 +2644,13 @@ grant select, insert, update, delete on all tables in schema public to authentic
 grant usage, select on all sequences in schema public to authenticated, service_role;
 
 -- Helper to keep policy creation idempotent.
+-- Creates a policy only if it doesn't exist yet (re-runs are no-ops).
 create or replace function public._policy(p_table text, p_name text, p_sql text)
 returns void language plpgsql as $$
 begin
-  execute format('drop policy if exists %I on public.%I', p_name, p_table);
-  execute p_sql;
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = p_table and policyname = p_name) then
+    execute p_sql;
+  end if;
 end $$;
 
 -- ---------- Reference data readable by everyone ----------------------
@@ -2752,8 +2747,6 @@ end $$;
 select public._policy('questions', 'q_read', $p$create policy q_read on public.questions for select using (
   (bank = 'practice' and status = 'published')
   or public.has_permission('questions.manage') or public.has_permission('questions.review'))$p$);
-select public._policy('questions', 'q_admin_update', $p$create policy q_admin_update on public.questions for update
-  using (public.has_permission('questions.manage')) with check (public.has_permission('questions.manage'))$p$);
 select public._policy('questions', 'q_admin_delete', $p$create policy q_admin_delete on public.questions for delete
   using (public.has_permission('questions.manage') and status = 'draft')$p$);
 -- Inserts go through admin_save_question / admin_import_questions.
@@ -2890,7 +2883,7 @@ select public._policy('support_tickets', 'st_admin', $p$create policy st_admin o
 revoke all on all tables in schema public from anon;
 grant select on public.programmes, public.products, public.ai_plans, public.ai_action_costs, public.feature_flags to anon;
 
-drop function public._policy(text, text, text);
+revoke execute on function public._policy(text, text, text) from public;
 
 -- ---------- Function privileges -------------------------------------
 -- Supabase grants EXECUTE on new functions to anon/authenticated by
@@ -2960,23 +2953,32 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
   ('ai-images', 'ai-images', false, 10485760, array['image/png','image/jpeg','image/webp'])
 on conflict (id) do nothing;
 
-drop policy if exists "content read by signed-in users" on storage.objects;
-create policy "content read by signed-in users" on storage.objects for select to authenticated
-  using (bucket_id in ('content','question-images') and public.is_active_user());
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'content read by signed-in users') then
+    create policy "content read by signed-in users" on storage.objects for select to authenticated
+      using (bucket_id in ('content','question-images') and public.is_active_user());
+  end if;
+end $do$;
 
-drop policy if exists "content managed by editors" on storage.objects;
-create policy "content managed by editors" on storage.objects for all to authenticated
-  using (
-    (bucket_id = 'content' and public.has_permission('content.manage')) or
-    (bucket_id = 'question-images' and public.has_permission('questions.manage')))
-  with check (
-    (bucket_id = 'content' and public.has_permission('content.manage')) or
-    (bucket_id = 'question-images' and public.has_permission('questions.manage')));
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'content managed by editors') then
+    create policy "content managed by editors" on storage.objects for all to authenticated
+      using (
+        (bucket_id = 'content' and public.has_permission('content.manage')) or
+        (bucket_id = 'question-images' and public.has_permission('questions.manage')))
+      with check (
+        (bucket_id = 'content' and public.has_permission('content.manage')) or
+        (bucket_id = 'question-images' and public.has_permission('questions.manage')));
+  end if;
+end $do$;
 
 -- AI images are written by the Edge Function (service role) into <user_id>/...
-drop policy if exists "ai images readable by owner" on storage.objects;
-create policy "ai images readable by owner" on storage.objects for select to authenticated
-  using (bucket_id = 'ai-images' and (storage.foldername(name))[1] = auth.uid()::text);
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'ai images readable by owner') then
+    create policy "ai images readable by owner" on storage.objects for select to authenticated
+      using (bucket_id = 'ai-images' and (storage.foldername(name))[1] = auth.uid()::text);
+  end if;
+end $do$;
 
 reset search_path;
 
@@ -3149,14 +3151,12 @@ do $$
 declare t text;
 begin
   foreach t in array array['curriculum_versions','courses','modules','topics','notes'] loop
-    execute format('drop trigger if exists require_review_%1$s on public.%1$I', t);
-    execute format('create trigger require_review_%1$s before insert or update of status on public.%1$I
+    execute format('create or replace trigger require_review_%1$s before insert or update of status on public.%1$I
                     for each row execute function public.tg_require_review_to_publish(%2$L)', t, 'content.review');
   end loop;
 end $$;
 
-drop trigger if exists require_review_questions on public.questions;
-create trigger require_review_questions before insert or update of status on public.questions
+create or replace trigger require_review_questions before insert or update of status on public.questions
   for each row execute function public.tg_require_review_to_publish('questions.review');
 
 -- A note's live version may only point at an APPROVED version of the same note,
@@ -3175,13 +3175,11 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists note_current_version_guard on public.notes;
-create trigger note_current_version_guard before update of current_version_id on public.notes
+create or replace trigger note_current_version_guard before update of current_version_id on public.notes
   for each row execute function public.tg_note_current_version_guard();
 
 -- Question edits must go through admin_save_question (versioned + validated).
 revoke update on public.questions from anon, authenticated;
-drop policy if exists q_admin_update on public.questions;
 
 -- ---------------------------------------------------------------------
 -- Extra foreign keys to profiles so the admin UI can embed the student's

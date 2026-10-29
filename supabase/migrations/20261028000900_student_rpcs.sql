@@ -15,7 +15,6 @@ begin
   insert into public.credit_wallets(user_id) values (new.id) on conflict do nothing;
   return new;
 end $$;
-drop trigger if exists on_auth_user_created on auth.users;
 create or replace trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
@@ -27,7 +26,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists on_auth_user_email on auth.users;
 create or replace trigger on_auth_user_email after update of email on auth.users
   for each row execute function public.handle_user_email_change();
 

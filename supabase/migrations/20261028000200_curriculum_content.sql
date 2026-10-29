@@ -138,7 +138,6 @@ begin
   if new.author_id is null then new.author_id := auth.uid(); end if;
   return new;
 end $$;
-drop trigger if exists note_versions_number on public.note_versions;
 create or replace trigger note_versions_number before insert on public.note_versions
   for each row execute function public.tg_note_version_number();
 
@@ -151,7 +150,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists note_versions_immutable on public.note_versions;
 create or replace trigger note_versions_immutable before update on public.note_versions
   for each row execute function public.tg_note_version_immutable();
 

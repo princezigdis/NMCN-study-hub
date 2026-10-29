@@ -93,7 +93,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists pool_item_bank_match on public.question_pool_items;
 create or replace trigger pool_item_bank_match before insert or update on public.question_pool_items
   for each row execute function public.tg_pool_item_bank_match();
 
@@ -134,7 +133,10 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists question_publish_guard on public.questions;
-create constraint trigger question_publish_guard after insert or update of status on public.questions
-  deferrable initially deferred
-  for each row execute function public.tg_question_publish_guard();
+do $$ begin
+  if not exists (select 1 from pg_trigger where tgname = 'question_publish_guard' and tgrelid = 'public.questions'::regclass) then
+    create constraint trigger question_publish_guard after insert or update of status on public.questions
+      deferrable initially deferred
+      for each row execute function public.tg_question_publish_guard();
+  end if;
+end $$;

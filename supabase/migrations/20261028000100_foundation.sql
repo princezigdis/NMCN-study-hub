@@ -81,7 +81,6 @@ create table if not exists public.profiles (
 create index if not exists profiles_programme_idx on public.profiles(programme_id);
 create index if not exists profiles_email_trgm on public.profiles using gin (email gin_trgm_ops);
 create index if not exists profiles_name_trgm on public.profiles using gin (full_name gin_trgm_ops);
-drop trigger if exists profiles_updated on public.profiles;
 create or replace trigger profiles_updated before update on public.profiles
   for each row execute function public.tg_set_updated_at();
 

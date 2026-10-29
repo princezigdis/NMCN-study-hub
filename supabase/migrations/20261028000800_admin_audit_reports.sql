@@ -22,7 +22,6 @@ returns trigger language plpgsql as $$
 begin
   raise exception 'audit_logs_are_append_only';
 end $$;
-drop trigger if exists audit_logs_immutable on public.audit_logs;
 create or replace trigger audit_logs_immutable before update or delete on public.audit_logs
   for each row execute function public.tg_audit_immutable();
 
@@ -60,8 +59,7 @@ begin
     'user_roles','role_permissions','entitlements','ai_subscriptions','products','ai_plans',
     'ai_action_costs','app_settings','feature_flags','refunds','exam_configs','exam_papers'
   ] loop
-    execute format('drop trigger if exists audit_%1$s on public.%1$I', t);
-    execute format('create trigger audit_%1$s after insert or update or delete on public.%1$I
+    execute format('create or replace trigger audit_%1$s after insert or update or delete on public.%1$I
                     for each row execute function public.tg_audit_row()', t);
   end loop;
 end $$;
@@ -76,7 +74,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists audit_profile_status on public.profiles;
 create or replace trigger audit_profile_status after update of status on public.profiles
   for each row execute function public.tg_audit_profile_status();
 

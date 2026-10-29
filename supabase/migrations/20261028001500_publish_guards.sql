@@ -23,14 +23,12 @@ do $$
 declare t text;
 begin
   foreach t in array array['curriculum_versions','courses','modules','topics','notes'] loop
-    execute format('drop trigger if exists require_review_%1$s on public.%1$I', t);
-    execute format('create trigger require_review_%1$s before insert or update of status on public.%1$I
+    execute format('create or replace trigger require_review_%1$s before insert or update of status on public.%1$I
                     for each row execute function public.tg_require_review_to_publish(%2$L)', t, 'content.review');
   end loop;
 end $$;
 
-drop trigger if exists require_review_questions on public.questions;
-create trigger require_review_questions before insert or update of status on public.questions
+create or replace trigger require_review_questions before insert or update of status on public.questions
   for each row execute function public.tg_require_review_to_publish('questions.review');
 
 -- A note's live version may only point at an APPROVED version of the same note,
@@ -49,13 +47,11 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists note_current_version_guard on public.notes;
-create trigger note_current_version_guard before update of current_version_id on public.notes
+create or replace trigger note_current_version_guard before update of current_version_id on public.notes
   for each row execute function public.tg_note_current_version_guard();
 
 -- Question edits must go through admin_save_question (versioned + validated).
 revoke update on public.questions from anon, authenticated;
-drop policy if exists q_admin_update on public.questions;
 
 -- ---------------------------------------------------------------------
 -- Extra foreign keys to profiles so the admin UI can embed the student's

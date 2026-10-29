@@ -78,7 +78,6 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists paper_pool_bank on public.exam_papers;
 create or replace trigger paper_pool_bank before insert or update on public.exam_papers
   for each row execute function public.tg_paper_pool_bank();
 

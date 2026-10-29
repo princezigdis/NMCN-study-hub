@@ -23,11 +23,13 @@ grant select, insert, update, delete on all tables in schema public to authentic
 grant usage, select on all sequences in schema public to authenticated, service_role;
 
 -- Helper to keep policy creation idempotent.
+-- Creates a policy only if it doesn't exist yet (re-runs are no-ops).
 create or replace function public._policy(p_table text, p_name text, p_sql text)
 returns void language plpgsql as $$
 begin
-  execute format('drop policy if exists %I on public.%I', p_name, p_table);
-  execute p_sql;
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = p_table and policyname = p_name) then
+    execute p_sql;
+  end if;
 end $$;
 
 -- ---------- Reference data readable by everyone ----------------------
@@ -124,8 +126,6 @@ end $$;
 select public._policy('questions', 'q_read', $p$create policy q_read on public.questions for select using (
   (bank = 'practice' and status = 'published')
   or public.has_permission('questions.manage') or public.has_permission('questions.review'))$p$);
-select public._policy('questions', 'q_admin_update', $p$create policy q_admin_update on public.questions for update
-  using (public.has_permission('questions.manage')) with check (public.has_permission('questions.manage'))$p$);
 select public._policy('questions', 'q_admin_delete', $p$create policy q_admin_delete on public.questions for delete
   using (public.has_permission('questions.manage') and status = 'draft')$p$);
 -- Inserts go through admin_save_question / admin_import_questions.
@@ -262,7 +262,7 @@ select public._policy('support_tickets', 'st_admin', $p$create policy st_admin o
 revoke all on all tables in schema public from anon;
 grant select on public.programmes, public.products, public.ai_plans, public.ai_action_costs, public.feature_flags to anon;
 
-drop function public._policy(text, text, text);
+revoke execute on function public._policy(text, text, text) from public;
 
 -- ---------- Function privileges -------------------------------------
 -- Supabase grants EXECUTE on new functions to anon/authenticated by

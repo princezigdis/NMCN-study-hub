@@ -15,20 +15,29 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
   ('ai-images', 'ai-images', false, 10485760, array['image/png','image/jpeg','image/webp'])
 on conflict (id) do nothing;
 
-drop policy if exists "content read by signed-in users" on storage.objects;
-create policy "content read by signed-in users" on storage.objects for select to authenticated
-  using (bucket_id in ('content','question-images') and public.is_active_user());
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'content read by signed-in users') then
+    create policy "content read by signed-in users" on storage.objects for select to authenticated
+      using (bucket_id in ('content','question-images') and public.is_active_user());
+  end if;
+end $do$;
 
-drop policy if exists "content managed by editors" on storage.objects;
-create policy "content managed by editors" on storage.objects for all to authenticated
-  using (
-    (bucket_id = 'content' and public.has_permission('content.manage')) or
-    (bucket_id = 'question-images' and public.has_permission('questions.manage')))
-  with check (
-    (bucket_id = 'content' and public.has_permission('content.manage')) or
-    (bucket_id = 'question-images' and public.has_permission('questions.manage')));
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'content managed by editors') then
+    create policy "content managed by editors" on storage.objects for all to authenticated
+      using (
+        (bucket_id = 'content' and public.has_permission('content.manage')) or
+        (bucket_id = 'question-images' and public.has_permission('questions.manage')))
+      with check (
+        (bucket_id = 'content' and public.has_permission('content.manage')) or
+        (bucket_id = 'question-images' and public.has_permission('questions.manage')));
+  end if;
+end $do$;
 
 -- AI images are written by the Edge Function (service role) into <user_id>/...
-drop policy if exists "ai images readable by owner" on storage.objects;
-create policy "ai images readable by owner" on storage.objects for select to authenticated
-  using (bucket_id = 'ai-images' and (storage.foldername(name))[1] = auth.uid()::text);
+do $do$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'ai images readable by owner') then
+    create policy "ai images readable by owner" on storage.objects for select to authenticated
+      using (bucket_id = 'ai-images' and (storage.foldername(name))[1] = auth.uid()::text);
+  end if;
+end $do$;
