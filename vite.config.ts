@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // BASE: "/" on a custom domain; "/nmcn-study-hub/" on the free GitHub project address.
 export default defineConfig({
-  base: process.env.VITE_BASE || "/",
+  base: "/",
   plugins: [react(), tailwindcss()],
   server: { port: 5173 },
   build: {
