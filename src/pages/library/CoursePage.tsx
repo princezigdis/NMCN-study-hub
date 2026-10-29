@@ -100,11 +100,11 @@ function TopicBlock({ topic, data, sub, children }: { topic: Topic; data: Course
           const p = data.progress.get(n.id);
           return (
             <li key={n.id}>
-              <Link to={`/library/note/${n.id}`} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-[var(--surface-2)]">
-                <Icon name={p?.completed ? "checkCircle" : "book"} size={16} className={p?.completed ? "text-emerald-600" : "ink-2"} />
-                <span className="flex-1">{n.title}</span>
-                {n.kind === "handout" && <span className="ink-2 text-xs">Handout</span>}
+              <Link to={`/library/note/${n.id}`} className="flex items-center gap-2 rounded-lg border line px-3 py-2 text-sm font-medium hover:border-brand-400 hover:bg-[var(--surface-2)]">
+                <Icon name={p?.completed ? "checkCircle" : "book"} size={16} className={p?.completed ? "text-emerald-600" : "text-brand-700"} />
+                <span className="flex-1">{n.kind === "handout" ? "Handout: " : "Read note: "}{n.title}</span>
                 {p && !p.completed && <span className="ink-2 text-xs">{p.percent}%</span>}
+                <Icon name="chevronRight" size={16} className="ink-2" />
               </Link>
             </li>
           );
