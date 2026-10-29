@@ -35,6 +35,11 @@ supabase db reset                # LOCAL ONLY: applies migrations + demo seed
 
 ### Your hosted project
 
+**Quickest way (no tools needed):** open Supabase Dashboard → **SQL Editor** → **New query**, paste the whole of
+`supabase/setup_all.sql`, then click **Run**. It contains all 16 migrations in order and is safe to run again.
+Regenerate it after changing migrations:
+`for f in supabase/migrations/*.sql; do cat "$f"; echo; echo "reset search_path;"; done > supabase/setup_all.sql`.
+
 When creating the project, choose these API settings:
 
 | Setting | Choice | Why |
