@@ -93,7 +93,7 @@ export default function ExamSectionPage({ section }: { section: "C" | "D" }) {
                     </div>
                     <div className="mt-1 font-semibold">{p.title}</div>
                     <div className="ink-2 mt-1 text-xs">
-                      {p.kind === "objective" ? `${p.question_count} questions · ${p.duration_minutes} min` : `${p.station_count} station${p.station_count === 1 ? "" : "s"} · ${p.kind === "viva" ? "Viva" : "CAOSCE"} practice`}
+                      {p.kind === "objective" ? `${p.question_count} questions · ${p.duration_minutes} min` : `Viva Lab, CAOSCE Lab and ${p.station_count} station${p.station_count === 1 ? "" : "s"}`}
                       {c.max_attempts ? ` · ${p.attempts_used}/${c.max_attempts} attempts` : ""}
                     </div>
                     <div className="mt-3">
@@ -103,7 +103,7 @@ export default function ExamSectionPage({ section }: { section: "C" | "D" }) {
                           {p.open_attempt_id ? "Resume" : "Start"}
                         </Button>
                       ) : (
-                        <Link to={`/paper/${p.id}/stations`}><Button size="sm" variant="secondary">Open stations</Button></Link>
+                        <Link to={`/paper/${p.id}/stations`}><Button size="sm" variant="secondary">Open Paper 4</Button></Link>
                       )}
                     </div>
                   </div>

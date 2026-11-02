@@ -81,8 +81,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             </NavLink>
           ))}
           <div className="pt-4" />
-          <NavLink to="/viva" className={(a) => navCls(a)}><Icon name="mic" size={18} />Viva Lab</NavLink>
-          <NavLink to="/caosce" className={(a) => navCls(a)}><Icon name="activity" size={18} />CAOSCE Lab</NavLink>
           <NavLink to="/flashcards" className={(a) => navCls(a)}><Icon name="cards" size={18} />Flashcards</NavLink>
           <NavLink to="/planner" className={(a) => navCls(a)}><Icon name="calendar" size={18} />Study planner</NavLink>
           <NavLink to="/videos" className={(a) => navCls(a)}><Icon name="video" size={18} />Procedure videos</NavLink>
@@ -124,7 +122,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={() => setMenu((m) => !m)} className="rounded-lg p-2 hover:bg-[var(--surface-2)]" aria-label="Menu" aria-expanded={menu}><Icon name="menu" /></button>
           {menu && (
             <div className="surface absolute right-0 top-11 w-56 rounded-xl border line p-1 shadow-xl">
-              {[["/profile", "Profile"], ["/library", "A · Study Library"], ["/practice", "B · Question Bank"], ["/mock", "C · Mock Exam"], ["/final", "D · Final Exam"], ["/dashboard", "E · My Dashboard"], ["/viva", "Viva Lab"], ["/caosce", "CAOSCE Lab"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/videos", "Procedure videos"], ["/plans", "AI plans"], ["/support", "Help & support"], ["/legal/terms", "Terms"], ["/legal/privacy", "Privacy"], ["/legal/credits", "Credit usage"], ["/legal/refunds", "Payments & refunds"]].map(([to, l]) => (
+              {[["/profile", "Profile"], ["/library", "A · Study Library"], ["/practice", "B · Question Bank"], ["/mock", "C · Mock Exam"], ["/final", "D · Final Exam"], ["/dashboard", "E · My Dashboard"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/videos", "Procedure videos"], ["/plans", "AI plans"], ["/support", "Help & support"], ["/legal/terms", "Terms"], ["/legal/privacy", "Privacy"], ["/legal/credits", "Credit usage"], ["/legal/refunds", "Payments & refunds"]].map(([to, l]) => (
                 <Link key={to} to={to} className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--surface-2)]">{l}</Link>
               ))}
               {isStaff && <Link to="/admin" className="block rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 hover:bg-[var(--surface-2)]">Admin console</Link>}

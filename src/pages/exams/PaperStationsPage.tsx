@@ -13,6 +13,10 @@ export default function PaperStationsPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader eyebrow="Paper 4" title="Viva & CAOSCE-style practice"
         subtitle="Work through each station as if an examiner were present, then compare your answers with the marking guide. This is practice feedback, not an official assessment." />
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Link to="/viva"><Card className="h-full hover:border-brand-400"><Icon name="mic" className="mb-2 text-brand-600" /><div className="font-semibold">Viva Lab</div><div className="ink-2 text-sm">Oral exam practice: answer by voice or typing and get a marking guide.</div></Card></Link>
+        <Link to="/caosce"><Card className="h-full hover:border-brand-400"><Icon name="activity" className="mb-2 text-brand-600" /><div className="font-semibold">CAOSCE Lab</div><div className="ink-2 text-sm">Learn procedures step by step, practise in the virtual lab and sit timed stations.</div></Card></Link>
+      </div>
       {!data?.length ? <EmptyState icon="clipboard" title="No stations yet">Stations for this paper are being prepared.</EmptyState> : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {data.map((s) => (
