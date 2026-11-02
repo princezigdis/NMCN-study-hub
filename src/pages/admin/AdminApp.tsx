@@ -13,6 +13,7 @@ import AdminImport from "./AdminImport";
 import AdminExams from "./AdminExams";
 import AdminPoolEditor from "./AdminPoolEditor";
 import AdminStations from "./AdminStations";
+import AdminLab from "./AdminLab";
 import AdminUsers from "./AdminUsers";
 import AdminAI from "./AdminAI";
 import AdminPayments from "./AdminPayments";
@@ -27,6 +28,7 @@ const NAV: Array<{ to: string; label: string; icon: IconName; perm?: string[] }>
   { to: "/admin/import", label: "Bulk import", icon: "upload", perm: ["questions.manage"] },
   { to: "/admin/exams", label: "Exams (C & D)", icon: "clipboard", perm: ["exams.manage"] },
   { to: "/admin/stations", label: "Viva & CAOSCE", icon: "award", perm: ["exams.manage"] },
+  { to: "/admin/lab", label: "Viva & CAOSCE lab", icon: "activity", perm: ["exams.manage", "content.manage", "content.review"] },
   { to: "/admin/users", label: "Users & access", icon: "user", perm: ["users.view"] },
   { to: "/admin/ai", label: "AI & plans", icon: "sparkles", perm: ["ai.manage", "pricing.manage"] },
   { to: "/admin/payments", label: "Payments", icon: "lock", perm: ["payments.view"] },
@@ -88,6 +90,7 @@ export default function AdminApp() {
           { path: "/admin/pools/:id", element: <AdminPoolEditor /> },
           { path: "/admin/stations", element: <AdminStations /> },
           { path: "/admin/stations/:id", element: <AdminStations /> },
+          { path: "/admin/lab", element: <AdminLab /> },
           { path: "/admin/users", element: <AdminUsers /> },
           { path: "/admin/users/:id", element: <AdminUsers /> },
           { path: "/admin/ai", element: <AdminAI /> },

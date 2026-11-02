@@ -33,6 +33,12 @@ import MyNotesPage from "./pages/dashboard/MyNotesPage";
 import PlansPage from "./pages/plans/PlansPage";
 import PaymentCallbackPage from "./pages/plans/PaymentCallbackPage";
 import NotFound from "./pages/NotFound";
+import { VivaHomePage, VivaProgressPage, VivaReportPage, VivaSessionPage } from "./pages/viva/VivaPages";
+import {
+  CaosceDashboardPage, CaosceExamSessionPage, CaosceExamsPage, CaosceHomePage, CaosceLabPage, CaosceLibraryPage,
+  CaosceProcedurePage, CaosceQuestionsPage, CaosceReportPage,
+} from "./pages/caosce/CaoscePages";
+import { hostSection } from "./lib/lab";
 import SetupRequired from "./pages/SetupRequired";
 
 // The admin console is code-split: students never download it.
@@ -59,6 +65,12 @@ function Suspended() {
   );
 }
 
+/** Optional subdomain mode: viva.<domain> and caosce.<domain> open their section at "/". */
+function RootRoute() {
+  const section = hostSection();
+  return section ? <Navigate to={`/${section}`} /> : <HomePage />;
+}
+
 const shell = (el: ReactNode) => <RequireAuth><AIProvider><AppShell>{el}</AppShell></AIProvider></RequireAuth>;
 
 const routes: RouteDef[] = [
@@ -74,7 +86,20 @@ const routes: RouteDef[] = [
   { path: "/payments-and-refunds", element: <LegalPage kind="refunds" /> },
   { path: "/procedure-videos", element: shell(<VideosPage />) },
   { path: "/onboarding", element: <RequireAuth><OnboardingPage /></RequireAuth> },
-  { path: "/", element: shell(<HomePage />) },
+  { path: "/", element: shell(<RootRoute />) },
+  { path: "/viva", element: shell(<VivaHomePage />) },
+  { path: "/viva/progress", element: shell(<VivaProgressPage />) },
+  { path: "/viva/session/:id", element: shell(<VivaSessionPage />) },
+  { path: "/viva/report/:id", element: shell(<VivaReportPage />) },
+  { path: "/caosce", element: shell(<CaosceHomePage />) },
+  { path: "/caosce/library", element: shell(<CaosceLibraryPage />) },
+  { path: "/caosce/procedure/:id", element: shell(<CaosceProcedurePage />) },
+  { path: "/caosce/lab", element: shell(<CaosceLabPage />) },
+  { path: "/caosce/questions", element: shell(<CaosceQuestionsPage />) },
+  { path: "/caosce/exams", element: shell(<CaosceExamsPage />) },
+  { path: "/caosce/exam/:id", element: <RequireAuth><CaosceExamSessionPage /></RequireAuth> },
+  { path: "/caosce/report/:id", element: shell(<CaosceReportPage />) },
+  { path: "/caosce/dashboard", element: shell(<CaosceDashboardPage />) },
   { path: "/library", element: shell(<LibraryPage />) },
   { path: "/library/course/:id", element: shell(<CoursePage />) },
   { path: "/library/note/:id", element: shell(<NotePage />) },
