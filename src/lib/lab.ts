@@ -38,6 +38,7 @@ export const caosce = {
   exams: () => rpc<J>("caosce_exams_list"),
   examStart: (exam: string, mode: "mock" | "timed_station" | "revision" = "mock", position?: number) =>
     rpc<string>("caosce_exam_start", { p_exam: exam, p_mode: mode, p_position: position ?? null }),
+  examStartRandom: () => rpc<string>("caosce_exam_start_random"),
   examGet: (id: string) => rpc<J>("caosce_exam_get", { p_attempt: id }),
   examSave: (id: string, position: number, answers: J) => rpc<J>("caosce_exam_save", { p_attempt: id, p_position: position, p_answers: answers }),
   examNext: (id: string) => rpc<J>("caosce_exam_next", { p_attempt: id }),

@@ -33,7 +33,6 @@ export default function ExamReviewPage() {
         <Stat label="Pass mark" value={r.pass_mark_percent !== null ? pct(r.pass_mark_percent) : "—"} hint="Set for this practice paper" />
         <Stat label="Outcome" value={r.passed === null ? "—" : r.passed ? "Pass" : "Below pass mark"} />
       </div>
-      <p className="ink-2 mt-2 text-xs">Practice result only. It isn't an official NMCN result or certification.</p>
 
       <Card className="mt-6">
         <h2 className="mb-3 font-semibold">Performance by topic</h2>

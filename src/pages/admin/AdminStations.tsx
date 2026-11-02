@@ -34,7 +34,7 @@ function StationList() {
   const { data, error, loading, reload } = useAsync(async () => must(await supabase.from("clinical_stations").select("*").order("created_at", { ascending: false })) as Station[], []);
   return (
     <div>
-      <PageHeader title="Viva & CAOSCE stations" subtitle="Practice stations with marking guides. Clearly practice only — not official assessments."
+      <PageHeader title="Viva & CAOSCE stations" subtitle="Practice stations with marking guides."
         actions={<Button icon="plus" onClick={() => setCreating(true)}>New station</Button>} />
       {loading && <Loading />}
       {error && <ErrorBox message={error} onRetry={reload} />}

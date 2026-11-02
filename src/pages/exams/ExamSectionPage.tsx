@@ -180,7 +180,7 @@ function Readiness({ history }: { history: ExamCatalogue["history"] }) {
     <Card className="border-brand-200 bg-brand-50/60 dark:bg-brand-900/30">
       <div className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">Readiness indicator</div>
       <div className="mt-1 text-xl font-bold">{label} · {pct(avg)}</div>
-      <p className="ink-2 mt-1 text-xs">Average of your last {done.length} Section D attempt{done.length > 1 ? "s" : ""}. This reflects practice performance only and doesn't predict or guarantee a result in the actual examination.</p>
+      <p className="ink-2 mt-1 text-xs">Average of your last {done.length} Section D attempt{done.length > 1 ? "s" : ""}.</p>
     </Card>
   );
 }

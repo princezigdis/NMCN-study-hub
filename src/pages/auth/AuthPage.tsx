@@ -67,7 +67,6 @@ export default function AuthPage() {
             <li>E · Your personal progress dashboard</li>
           </ul>
         </div>
-        <p className="text-xs text-white/70">Independent study platform. Not affiliated with or endorsed by the Nursing and Midwifery Council of Nigeria.</p>
       </div>
 
       <div className="flex items-center justify-center px-4 py-12">

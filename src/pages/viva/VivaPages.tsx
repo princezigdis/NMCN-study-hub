@@ -10,13 +10,9 @@ import { Icon } from "../../components/Icon";
 const MODES = [
   { id: "learning", label: "Learning", hint: "Guide and feedback after every answer" },
   { id: "practice", label: "Practice", hint: "Feedback after every answer, you can claim points" },
-  { id: "mock", label: "Mock viva", hint: "Timed, no feedback until the end" },
   { id: "weakness", label: "My weak topics", hint: "Questions you missed before" },
 ];
 
-function Disclaimer() {
-  return <p className="ink-2 mt-6 text-xs">Practice tool prepared for revision. It is not an official NMCN assessment and does not predict your examination result. Marking looks for the meaning of your answer, so different wording is fine.</p>;
-}
 
 // ---------------------------------------------------------------- Home
 export function VivaHomePage() {
@@ -48,7 +44,7 @@ export function VivaHomePage() {
   return (
     <div>
       <PageHeader eyebrow="Oral examination practice" title="Viva Lab"
-        subtitle="Answer examiner-style questions in your own words, by voice or typing. You are marked on meaning, and you always see the marking guide."
+        subtitle="Practice area. Answer examiner-style questions in your own words, by voice or typing, and see the marking guide. The full timed viva exam is in Paper 4 of Section C and D."
         actions={<><Link to="/viva/progress"><Button variant="secondary" icon="chart">My progress</Button></Link><Link to="/caosce"><Button variant="secondary" icon="clipboard">CAOSCE Lab</Button></Link></>} />
       {!h.programme && <Card className="mb-4"><p className="text-sm">Choose RN or RM in your <Link to="/profile" className="underline">profile</Link> to see questions for your programme.</p></Card>}
       <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -100,7 +96,6 @@ export function VivaHomePage() {
               <Button size="sm" variant="secondary" className="mt-3" onClick={() => start(c.id)} disabled={busy}>Practise</Button>
             </Card>))}
         </div>)}
-      <Disclaimer />
     </div>
   );
 }
@@ -237,7 +232,6 @@ export function VivaSessionPage() {
           </div>
         </>)}
       </Card>
-      <Disclaimer />
     </div>
   );
 }
@@ -263,7 +257,6 @@ export function VivaReportPage() {
             {it.result && <ResultView r={it.result} mode="mock" onAdjust={() => undefined} />}
           </Card>))}
       </div>
-      <p className="ink-2 mt-6 text-xs">{r.disclaimer}</p>
     </div>
   );
 }

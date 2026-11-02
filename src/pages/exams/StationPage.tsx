@@ -49,7 +49,7 @@ export default function StationPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader eyebrow={<>{s.kind === "viva" ? "Viva" : "CAOSCE-style"} station {s.is_demo && <DemoBadge />}</>} title={s.title} />
       <div className="mb-4 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
-        Practice only. Feedback here is not an official viva or OSCE assessment.
+        Compare your answers with the marking guide.
       </div>
 
       <Card>

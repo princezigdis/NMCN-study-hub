@@ -35,7 +35,7 @@ import PaymentCallbackPage from "./pages/plans/PaymentCallbackPage";
 import NotFound from "./pages/NotFound";
 import { VivaHomePage, VivaProgressPage, VivaReportPage, VivaSessionPage } from "./pages/viva/VivaPages";
 import {
-  CaosceDashboardPage, CaosceExamSessionPage, CaosceExamsPage, CaosceHomePage, CaosceLabPage, CaosceLibraryPage,
+  CaosceDashboardPage, CaosceExamSessionPage, CaosceHomePage, CaosceLabPage, CaosceLibraryPage,
   CaosceProcedurePage, CaosceQuestionsPage, CaosceReportPage,
 } from "./pages/caosce/CaoscePages";
 import { hostSection } from "./lib/lab";
@@ -96,7 +96,6 @@ const routes: RouteDef[] = [
   { path: "/caosce/procedure/:id", element: shell(<CaosceProcedurePage />) },
   { path: "/caosce/lab", element: shell(<CaosceLabPage />) },
   { path: "/caosce/questions", element: shell(<CaosceQuestionsPage />) },
-  { path: "/caosce/exams", element: shell(<CaosceExamsPage />) },
   { path: "/caosce/exam/:id", element: <RequireAuth><CaosceExamSessionPage /></RequireAuth> },
   { path: "/caosce/report/:id", element: shell(<CaosceReportPage />) },
   { path: "/caosce/dashboard", element: shell(<CaosceDashboardPage />) },

@@ -8,8 +8,6 @@ import { mmss } from "../../lib/speech";
 import { Badge, Button, Card, EmptyState, ErrorBox, Input, Loading, PageHeader, ProgressBar, Select, Stat, Tabs, Textarea, useToast } from "../../components/ui";
 import { Icon } from "../../components/Icon";
 
-const DISCLAIMER = "Practice tool for revision. It is not an official NMCN CAOSCE, and passing here does not guarantee any examination result. Content is reviewed by tutors but always follow your school's approved procedure manual.";
-const Disclaimer = () => <p className="ink-2 mt-6 text-xs">{DISCLAIMER}</p>;
 
 function Back({ to, label = "Back" }: { to: string; label?: string }) {
   return <Link to={to} className="ink-2 mb-3 inline-flex items-center gap-1 text-sm hover:underline"><Icon name="chevronLeft" size={16} />{label}</Link>;
@@ -25,7 +23,6 @@ export function CaosceHomePage() {
     { to: "/caosce/library", icon: "book", title: "Procedure library", text: "Learn each procedure in seven stages." },
     { to: "/caosce/lab", icon: "activity", title: "Virtual skills lab", text: "Sequencing, equipment, mistakes and decisions." },
     { to: "/caosce/questions", icon: "quiz", title: "Question stations", text: "Practise short questions on procedures." },
-    { to: "/caosce/exams", icon: "clipboard", title: "Mock CAOSCE", text: "Timed stations marked against a checklist." },
     { to: "/caosce/dashboard", icon: "chart", title: "My progress", text: "See your weak procedures and missed steps." },
     { to: "/viva", icon: "mic", title: "Viva Lab", text: "Oral questions in your own words." },
   ];
@@ -47,7 +44,6 @@ export function CaosceHomePage() {
           {d.recommended.map((r: J) => <Link key={r.id} to={`/caosce/procedure/${r.id}`} className="flex justify-between py-1 text-sm hover:underline"><span>{r.name}</span>{r.locked && <Icon name="lock" size={14} />}</Link>)}</Card>}
       </div>
       {!d.has_access && <Card className="mt-4"><p className="text-sm">Free preview procedures are open to everyone. <Link to="/plans" className="underline">Unlock Section C/D</Link> for the whole lab.</p></Card>}
-      <Disclaimer />
     </div>
   );
 }
@@ -250,7 +246,7 @@ export function CaosceProcedurePage() {
           <List title="Safety and infection control" items={d.safety} />
           <div className="ink-2 border-t pt-3 text-xs line">
             {d.references?.length > 0 && <p>Sources: {d.references.join("; ")}</p>}
-            <p>{d.reviewer ? `Reviewed by ${d.reviewer}${d.reviewed_at ? `, ${d.reviewed_at}` : ""}` : "Not yet reviewed by a tutor"} · version {d.version}</p></div>
+            <p></p></div>
           <div className="mt-3"><MarkBtn s="understand" /></div></>)}
 
         {stage === "equipment" && (<>
@@ -290,8 +286,7 @@ export function CaosceProcedurePage() {
         {stage === "station" && (<>
           <p className="mb-3 text-sm">Test yourself with mistake-spotting and clinical-decision exercises, then try it in a timed station.</p>
           {d.exercises.length === 0 ? <p className="ink-2 text-sm">No exercises for this procedure yet.</p> : <div className="space-y-4">{d.exercises.map((x: J) => <PickExercise key={x.id} id={x.id} onDone={() => mark("station")} />)}</div>}
-          <div className="mt-4 flex flex-wrap gap-2"><Link to="/caosce/exams"><Button variant="accent" icon="clock">Go to timed stations</Button></Link>
-            {d.question_count > 0 && <Link to={`/caosce/questions?procedure=${d.id}`}><Button variant="secondary">Practise questions ({d.question_count})</Button></Link>}</div></>)}
+          <div className="mt-4 flex flex-wrap gap-2">{d.question_count > 0 && <Link to={`/caosce/questions?procedure=${d.id}`}><Button variant="secondary">Practise questions ({d.question_count})</Button></Link>}</div></>)}
 
         {stage === "results" && (<>
           <h3 className="mb-2 font-semibold">Your progress on this procedure</h3>
@@ -299,7 +294,6 @@ export function CaosceProcedurePage() {
           <p className="ink-2 mt-3 text-sm">{know.length} of {d.steps.length} steps marked understood.</p>
           <div className="mt-4 flex gap-2"><MarkBtn s="results" /><Link to="/caosce/dashboard"><Button variant="secondary" size="sm">Open my dashboard</Button></Link><Button size="sm" variant="ghost" onClick={() => nav("/caosce/library")}>Back to library</Button></div></>)}
       </Card>
-      <Disclaimer />
     </div>
   );
 }
@@ -325,7 +319,6 @@ export function CaosceLabPage() {
           {kind === "equipment" && (d.candidates.length ? <EquipmentExercise key={pid} p={d} onDone={() => undefined} /> : <p className="ink-2 text-sm">No equipment list yet.</p>)}
           {(kind === "mistake" || kind === "decision") && (d.exercises.filter((x: J) => x.kind === kind).length ? d.exercises.filter((x: J) => x.kind === kind).map((x: J) => <PickExercise key={x.id} id={x.id} />) : <p className="ink-2 text-sm">No exercises of this type yet.</p>)}
         </div></>)}
-      <Disclaimer />
     </div>
   );
 }
@@ -371,7 +364,6 @@ export function CaosceQuestionsPage() {
             {(r.explanation || r.rationale) && <p>{r.explanation ?? r.rationale}</p>}
             <div className="flex justify-end">{i < list.length - 1 ? <Button onClick={() => setI(i + 1)}>Next</Button> : <Link to="/caosce"><Button>Finish</Button></Link>}</div></div>)}
       </Card>
-      <Disclaimer />
     </div>
   );
 }
@@ -407,7 +399,6 @@ export function CaosceExamsPage() {
               <Button loading={busy === e.id + "mock"} onClick={() => start(e.id)} icon="play">Start full mock</Button>
               <Button variant="secondary" loading={busy === e.id + "revision"} onClick={() => start(e.id, "revision")}>Revise my weak stations</Button></div>
           </Card>))}</div>)}
-      <Disclaimer />
     </div>
   );
 }
@@ -469,7 +460,7 @@ export function CaosceExamSessionPage() {
       {g.position === 1 && <p className="ink-2 mb-3 text-sm">{g.exam.instructions}</p>}
       <Card>
         <Badge tone="brand">{c.kind === "procedure" ? "Procedure station" : "Question station"}</Badge>
-        <h2 className="mb-2 mt-2 text-lg font-semibold">{c.title}</h2>
+        <h2 className="mb-2 mt-2 text-lg font-semibold">{String(c.title).replace(/^\[[A-Z]+\]\s*/, "")}</h2>
         {c.kind === "procedure" ? (<>
           {c.scenario && <div className="surface-2 mb-3 rounded-lg p-3 text-sm"><b>Scenario:</b> {c.scenario}</div>}
           {c.candidate_instructions && <div className="mb-3 text-sm"><b>Instructions:</b> {c.candidate_instructions}</div>}
@@ -498,13 +489,12 @@ export function CaosceReportPage() {
   const d: J = r.data;
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader eyebrow={d.exam} title={`${d.percent ?? 0}%`} subtitle={`${d.score} of ${d.max} marks · pass mark in this practice ${d.pass_percent}%`}
-        actions={<Badge tone={d.passed ? "success" : "danger"}>{d.passed ? "Practice pass" : "Below practice pass mark"}</Badge>} />
+      <PageHeader eyebrow={d.exam} title={`${d.percent ?? 0}%`} subtitle={`${d.score} of ${d.max} marks · pass mark ${d.pass_percent}%`}
+        actions={<Badge tone={d.passed ? "success" : "danger"}>{d.passed ? "Pass" : "Below pass mark"}</Badge>} />
       <div className="space-y-4">{d.stations.map((s: J) => (
         <Card key={s.position}>
-          <div className="flex justify-between gap-2"><h3 className="font-semibold">{s.position}. {s.title}</h3><Badge tone={tone(s.max ? 100 * s.score / s.max : 0)}>{s.score}/{s.max}</Badge></div>
+          <div className="flex justify-between gap-2"><h3 className="font-semibold">{s.position}. {String(s.title).replace(/^\[[A-Z]+\]\s*/, "")}</h3><Badge tone={tone(s.max ? 100 * s.score / s.max : 0)}>{s.score}/{s.max}</Badge></div>
           {s.detail?.timed_out && <p className="mt-1 text-sm text-red-600">Time ran out at this station.</p>}
-          {s.detail?.note && <p className="ink-2 mt-1 text-xs">{s.detail.note}</p>}
           {s.detail?.critical_missed?.length > 0 && <div className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800 dark:bg-red-950 dark:text-red-200"><b>Critical steps you did not mention:</b><ul className="list-disc pl-5">{s.detail.critical_missed.map((c: J) => <li key={c.id}>{c.step}</li>)}</ul></div>}
           {s.detail?.checklist && <div className="mt-3"><div className="mb-1 text-sm font-semibold">Marking checklist</div><ul className="space-y-1 text-sm">{s.detail.checklist.map((i: J) => (
             <li key={i.id} className="flex gap-2"><Icon name={i.status === "done" ? "check" : i.status === "partial" ? "info" : "x"} size={16} className={i.status === "done" ? "text-green-600" : i.status === "partial" ? "text-amber-600" : "text-red-600"} /><span className="flex-1">{i.step}</span><span className="ink-2">{i.awarded}/{i.points}</span></li>))}</ul></div>}
@@ -513,8 +503,7 @@ export function CaosceReportPage() {
             {q.options?.filter((o: J) => o.correct).map((o: J) => <p key={o.id}><b>Correct:</b> {o.text}</p>)}{q.model_answer && <p><b>Model answer:</b> {q.model_answer}</p>}{(q.explanation || q.rationale) && <p>{q.explanation ?? q.rationale}</p>}</div>)}
           {s.revise && <Link to={`/caosce/procedure/${s.revise.id}`}><Button className="mt-3" size="sm" variant="secondary">Revise: {s.revise.name}</Button></Link>}
         </Card>))}</div>
-      <div className="mt-5 flex gap-2"><Link to="/caosce/exams"><Button>More stations</Button></Link><Link to="/caosce/dashboard"><Button variant="secondary">Dashboard</Button></Link></div>
-      <p className="ink-2 mt-6 text-xs">{d.disclaimer} The procedure stations are marked on what you wrote; they do not show that you can perform the skill. Practise with a skilled instructor.</p>
+      <div className="mt-5 flex gap-2"><Link to="/"><Button>Home</Button></Link><Link to="/caosce/dashboard"><Button variant="secondary">Dashboard</Button></Link></div>
     </div>
   );
 }
@@ -539,7 +528,6 @@ export function CaosceDashboardPage() {
         <Card><h2 className="mb-2 font-semibold">By exercise type</h2>{data.by_kind.length === 0 ? <p className="ink-2 text-sm">No exercises yet.</p> : data.by_kind.map((k: J) => <div key={k.kind} className="mb-2"><div className="flex justify-between text-sm"><span className="capitalize">{k.kind}</span><span className="ink-2">{k.percent}% · {k.attempts}</span></div><ProgressBar value={k.percent ?? 0} /></div>)}</Card>
         <Card><h2 className="mb-2 font-semibold">Mock exams</h2>{data.exams.length === 0 ? <p className="ink-2 text-sm">No mock exams yet.</p> : data.exams.map((e: J) => <Link key={e.id} to={`/caosce/report/${e.id}`} className="flex justify-between py-1 text-sm hover:underline"><span>{e.exam}</span><Badge tone={tone(e.percent)}>{e.percent}%</Badge></Link>)}</Card>
       </div>
-      <Disclaimer />
     </div>
   );
 }

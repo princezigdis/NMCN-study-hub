@@ -23,7 +23,6 @@ const DOCS: Record<LegalKind, { title: string; body: ReactNode }> = {
         "Notes, questions and rationales are provided for personal study only.",
         "Do not copy, resell, scrape or redistribute the content.",
         "Do not share your account or try to bypass credit, payment or access limits.",
-        "Practice questions are study aids and do not replace your school textbooks or official NMCN guidance.",
       ]} />
       <H>4. AI features</H>
       <P>AI tools use credits and may produce answers that need checking against your approved notes. Never enter patient-identifiable information.</P>
