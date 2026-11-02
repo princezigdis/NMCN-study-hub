@@ -12,9 +12,9 @@ import { useAsync } from "../../lib/useAsync";
 type CourseRow = Course & { course_programmes: Array<{ programmes: { code: string } | null }> };
 
 export default function LibraryPage() {
-  const { programme } = useAuth();
+  const { programme, isStaff } = useAuth();
   const [params, setParams] = useSearchParams();
-  const prog = params.get("programme") ?? programme?.code ?? "all";
+  const prog = isStaff ? (params.get("programme") ?? programme?.code ?? "all") : (programme?.code ?? "none");
   const [query, setQuery] = useState(params.get("q") ?? "");
   const [debounced, setDebounced] = useState(query);
 
@@ -62,14 +62,19 @@ export default function LibraryPage() {
           <Icon name="search" size={18} className="ink-2 absolute left-3 top-1/2 -translate-y-1/2" />
           <Input placeholder="Search notes, e.g. pre-eclampsia, wound care…" value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10" aria-label="Search notes" />
         </div>
-        <div className="flex rounded-lg border line surface p-1" role="group" aria-label="Programme filter">
+        {!isStaff && programme && (
+          <div className="flex items-center rounded-lg border line surface px-3 text-sm font-medium" title="Your study track is locked to your account">
+            <Icon name="lock" size={14} className="mr-2 ink-2" />{programme.name} · {programme.code}
+          </div>
+        )}
+        {isStaff && <div className="flex rounded-lg border line surface p-1" role="group" aria-label="Programme filter">
           {["all", "RN", "RM"].map((p) => (
             <button key={p} onClick={() => setParams({ programme: p })} aria-pressed={prog === p}
               className={cx("rounded-md px-3 py-1 text-sm font-medium", prog === p ? "bg-brand-700 text-white" : "ink-2")}>
               {p === "all" ? "All" : p}
             </button>
           ))}
-        </div>
+        </div>}
       </div>
 
       {debounced.length >= 2 ? (

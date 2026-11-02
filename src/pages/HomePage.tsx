@@ -29,14 +29,26 @@ export default function HomePage() {
         <div className="text-sm text-white/80">{programme ? `${programme.name} · ${programme.code}` : "Welcome"}</div>
         <h1 className="mt-1 text-2xl font-bold sm:text-3xl">{first ? `Good to see you, ${first}.` : "Good to see you."}</h1>
         <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          {days !== null && days >= 0 && <span className="rounded-full bg-white/15 px-3 py-1"><b>{days}</b> days to your exam</span>}
+          {days !== null && days >= 0
+            ? <span className="rounded-full bg-white/15 px-3 py-1"><b>{days}</b> days to your exam</span>
+            : <Link to="/profile" className="rounded-full bg-white/15 px-3 py-1 underline-offset-2 hover:underline">Set your exam date</Link>}
           {data && <span className="rounded-full bg-white/15 px-3 py-1"><b>{data.streak_days}</b>-day study streak</span>}
-          {accuracy !== null && <span className="rounded-full bg-white/15 px-3 py-1"><b>{pct(accuracy)}</b> practice accuracy</span>}
+          {data && <span className="rounded-full bg-white/15 px-3 py-1">{accuracy !== null ? <><b>{pct(accuracy)}</b> practice accuracy</> : "No practice yet"}</span>}
         </div>
       </section>
 
       {error && <ErrorBox message={error} onRetry={reload} />}
       {loading && !data && <Loading />}
+
+      {data && !lastNote && !openPractice && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide ink-2">Get started</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link to="/library"><Card className="h-full hover:border-brand-400"><div className="font-semibold">Read your first note</div><p className="ink-2 mt-1 text-sm">Open the Study Library and pick a course.</p></Card></Link>
+            <Link to="/practice"><Card className="h-full hover:border-brand-400"><div className="font-semibold">Try 10 practice questions</div><p className="ink-2 mt-1 text-sm">Every option comes with a rationale.</p></Card></Link>
+          </div>
+        </section>
+      )}
 
       {(lastNote || openPractice) && (
         <section>

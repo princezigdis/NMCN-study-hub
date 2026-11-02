@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthProvider";
-import { Button, Card, cx, ErrorBox, Field, PageHeader, Select } from "../../components/ui";
+import { Button, Card, cx, ErrorBox, Field, Input, PageHeader, Select } from "../../components/ui";
 import { api } from "../../lib/api";
 import { friendly } from "../../lib/errors";
 import { Link, useNavigate, useSearchParams } from "../../lib/router";
@@ -15,7 +15,7 @@ const MODES = [
 ] as const;
 
 export default function PracticeSetupPage() {
-  const { programme } = useAuth();
+  const { programme, isStaff } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [count, setCount] = useState<number>(20);
@@ -93,11 +93,12 @@ export default function PracticeSetupPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Programme">{(id) => (
+          {!isStaff && <Field label="Study track">{(id) => <Input id={id} value={programme ? `${programme.name} (${programme.code})` : ""} disabled readOnly />}</Field>}
+          {isStaff && <Field label="Programme">{(id) => (
             <Select id={id} value={prog} onChange={(e) => setProg(e.target.value)}>
               <option value="">RN and RM</option><option value="RN">RN only</option><option value="RM">RM only</option>
             </Select>
-          )}</Field>
+          )}</Field>}
           <Field label="Difficulty">{(id) => (
             <Select id={id} value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
               <option value="">Any</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>

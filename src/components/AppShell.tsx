@@ -36,6 +36,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       .then(({ data }) => setBanner(Boolean(data?.enabled)));
   }, [pathname]);
   useEffect(() => setMenu(false), [pathname]);
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenu(false); };
+    const onClick = (e: MouseEvent) => { if (!(e.target as HTMLElement).closest("[data-menu-root]")) setMenu(false); };
+    document.addEventListener("keydown", onKey); document.addEventListener("mousedown", onClick);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("mousedown", onClick); };
+  }, [menu]);
 
   if (site.maintenance?.enabled && !isStaff) {
     return (
@@ -104,7 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <button onClick={toggleTheme} className="rounded-lg p-2 hover:bg-[var(--surface-2)]" aria-label="Toggle dark mode">
           <Icon name="moon" className="dark:hidden" /><Icon name="sun" className="hidden dark:block" />
         </button>
-        <div className="relative lg:hidden">
+        <div className="relative lg:hidden" data-menu-root>
           <button onClick={() => setMenu((m) => !m)} className="rounded-lg p-2 hover:bg-[var(--surface-2)]" aria-label="Menu" aria-expanded={menu}><Icon name="menu" /></button>
           {menu && (
             <div className="surface absolute right-0 top-11 w-56 rounded-xl border line p-1 shadow-xl">
