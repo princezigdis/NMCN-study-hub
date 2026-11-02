@@ -17,7 +17,7 @@ Deno.serve(handler(Deno.env.get("ALLOWED_ORIGINS") ?? "*", async (req) => {
   const secrets = {
     anthropic: Boolean(Deno.env.get("ANTHROPIC_API_KEY")),
     openai: Boolean(Deno.env.get("OPENAI_API_KEY")),
-    youtube: Boolean(Deno.env.get("YOUTUBE_API_KEY")),
+    youtube: Boolean(Deno.env.get("YOUTUBE_DATA_API_KEY") || Deno.env.get("YOUTUBE_API_KEY")),
     paystack: Boolean(Deno.env.get("PAYSTACK_SECRET_KEY")),
   };
   if (!body.provider || !body.model) return json({ secrets });

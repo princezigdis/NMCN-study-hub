@@ -144,7 +144,7 @@ Deno.serve(handler(Deno.env.get("ALLOWED_ORIGINS") ?? "*", async (req) => {
       data = { imagePath: path, imageUrl: signed.data?.signedUrl ?? null };
       output = "Diagram generated. AI images can contain errors in labels; verify against your notes.";
     } else if (action === "video_search") {
-      const key = env("YOUTUBE_API_KEY");
+      const key = Deno.env.get("YOUTUBE_DATA_API_KEY") || env("YOUTUBE_API_KEY");
       provider = "youtube"; model = "data-api-v3";
       const query = buildVideoQuery(text, topicTitle, programme);
       const videos = await searchVideos(key, query);
