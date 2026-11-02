@@ -26,7 +26,10 @@ const MESSAGES: Record<string, string> = {
   selection_too_long: "That selection is too long. Select a shorter passage.",
   answer_first: "Answer this question first, then ask the AI to explain it.",
   invalid_json: "Something went wrong sending your request.",
-  internal_error: "Something went wrong. Please try again.",
+  internal_error: "Unable to process request right now. Please try again.",
+  duplicate_bookmark: "This item is already saved.",
+  insufficient_credits: "You're out of AI credits. Top up to continue.",
+  track_locked: "Your study track is locked. Switching tracks is a paid option on your profile.",
 };
 
 export class AppError extends Error {
@@ -45,8 +48,10 @@ export function toAppError(err: unknown): AppError {
   if (code === "question_invalid" && detail) return new AppError(code, `Not ready to publish: ${detail}`);
   if (code === "permission_denied") return new AppError(code, MESSAGES.permission_denied);
   if (MESSAGES[code]) return new AppError(code, MESSAGES[code]);
+  if (/duplicate key|already exists|unique constraint|23505/i.test(raw)) return new AppError("duplicate", MESSAGES.duplicate_bookmark);
   if (/failed to fetch|network/i.test(raw)) return new AppError("network", "You appear to be offline. Check your connection and try again.");
-  return new AppError(code, raw || MESSAGES.internal_error);
+  // Never surface raw technical text (SQL, stack traces, codes) to students.
+  return new AppError(code, MESSAGES.internal_error);
 }
 
 export function friendly(err: unknown): string {

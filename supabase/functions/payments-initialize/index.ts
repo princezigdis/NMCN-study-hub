@@ -8,9 +8,9 @@ Deno.serve(handler(Deno.env.get("ALLOWED_ORIGINS") ?? "*", async (req) => {
   const { user } = await requireUser(req);
   const admin = adminClient();
   const body = await readJson<{ purpose?: string; code?: string }>(req, 4096);
-  const purpose = body.purpose === "ai_plan" ? "ai_plan" : body.purpose === "product" ? "product" : null;
-  const code = String(body.code ?? "");
-  if (!purpose || !/^[a-z_]{2,30}$/.test(code)) throw new HttpError(400, "invalid_item");
+  const purpose = body.purpose === "ai_plan" ? "ai_plan" : body.purpose === "product" ? "product" : body.purpose === "track_switch" ? "track_switch" : null;
+  const code = purpose === "track_switch" ? String(body.code ?? "").toUpperCase() : String(body.code ?? "");
+  if (!purpose || !(purpose === "track_switch" ? /^[A-Z]{2,6}$/ : /^[a-z_]{2,30}$/).test(code)) throw new HttpError(400, "invalid_item");
 
   const secret = Deno.env.get("PAYSTACK_SECRET_KEY") ?? "";
   const mode = keyMode(secret);
@@ -33,6 +33,15 @@ Deno.serve(handler(Deno.env.get("ALLOWED_ORIGINS") ?? "*", async (req) => {
     const { data: hasAccess } = await admin.rpc("user_has_entitlement", { p_user: user.id, p_product: code });
     if (hasAccess) throw new HttpError(409, "already_has_access", "You already have access to this section.");
     amountKobo = p.price_kobo; label = p.name;
+  } else if (purpose === "track_switch") {
+    const { data: prof } = await admin.from("profiles").select("programme_id, programmes(code)").eq("id", user.id).single();
+    const current = (prof as { programmes?: { code?: string } | null } | null)?.programmes?.code;
+    if (current === code) throw new HttpError(409, "already_on_track", "You are already on this track.");
+    const { data: target } = await admin.from("programmes").select("code, active").eq("code", code).maybeSingle();
+    if (!target?.active) throw new HttpError(404, "item_unavailable");
+    const fee = await getSetting<number>(admin, "pricing.track_switch_kobo");
+    amountKobo = Number(fee) > 0 ? Number(fee) : 100000;
+    label = `Switch to ${code} track`;
   } else {
     const { data: plan } = await admin.from("ai_plans").select("name, price_kobo, active").eq("code", code).maybeSingle();
     if (!plan?.active || plan.price_kobo <= 0) throw new HttpError(404, "item_unavailable");

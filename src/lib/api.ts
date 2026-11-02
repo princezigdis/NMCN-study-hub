@@ -84,8 +84,9 @@ export const api = {
   }) => callFunction<AiResponse>("ai-assist", body),
 
   // ---------- Payments ----------
-  checkout: (purpose: "product" | "ai_plan", code: string) =>
+  checkout: (purpose: "product" | "ai_plan" | "track_switch", code: string) =>
     callFunction<{ authorizationUrl: string; reference: string; amountKobo: number; mode: string }>("payments-initialize", { purpose, code }),
+  videoSearch: (query: string) => callFunction<{ videos: Array<{ videoId: string; title: string; channel: string; thumbnail: string; url: string }> }>("video-search", { query }),
   verifyPayment: (reference: string) =>
     callFunction<{ status: string; purpose: string; item: string }>("payments-verify", { reference }),
 };

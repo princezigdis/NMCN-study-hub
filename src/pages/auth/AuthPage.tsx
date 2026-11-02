@@ -11,7 +11,9 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = params.get("next") || "/";
-  const [mode, setMode] = useState<Mode>(params.get("mode") === "signup" ? "signup" : "signin");
+  const refParam = params.get("ref");
+  if (refParam) { try { localStorage.setItem("nmcn_ref", refParam.slice(0, 16).toUpperCase()); } catch { /* ignore */ } }
+  const [mode, setMode] = useState<Mode>(params.get("mode") === "signup" || refParam ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -101,7 +103,7 @@ export default function AuthPage() {
             )}
           </div>
           {mode === "signup" && (
-            <p className="ink-2 text-xs">By creating an account you agree to use the content for personal study. AI features process the text you select; never enter patient-identifiable information.</p>
+            <p className="ink-2 text-xs">By creating an account you agree to our <a className="underline" href={`${BASE}/legal/terms`}>Terms</a> and <a className="underline" href={`${BASE}/legal/privacy`}>Privacy Policy</a>. Content is for personal study.</p>
           )}
         </form>
       </div>

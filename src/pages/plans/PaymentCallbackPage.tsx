@@ -31,7 +31,7 @@ export default function PaymentCallbackPage() {
     return () => { cancelled = true; };
   }, [reference, refreshWallet]);
 
-  const dest = state.purpose === "ai_plan" ? "/plans" : state.item === "section_d" ? "/final" : "/mock";
+  const dest = state.purpose === "track_switch" ? "/library" : state.purpose === "ai_plan" ? "/plans" : state.item === "section_d" ? "/final" : "/mock";
   return (
     <div className="mx-auto max-w-md py-12">
       <Card className="text-center">
@@ -39,7 +39,7 @@ export default function PaymentCallbackPage() {
           <><Spinner size={32} className="mx-auto text-brand-600" /><h1 className="mt-4 text-lg font-semibold">Confirming your payment…</h1><p className="ink-2 mt-1 text-sm">This usually takes a few seconds.</p></>
         ) : state.status === "success" ? (
           <><Icon name="checkCircle" size={40} className="mx-auto text-emerald-600" /><h1 className="mt-3 text-lg font-semibold">Payment confirmed</h1>
-            <p className="ink-2 mt-1 text-sm">{state.purpose === "ai_plan" ? "Your AI credits have been added." : "Your exam section is now unlocked."}</p>
+            <p className="ink-2 mt-1 text-sm">{state.purpose === "track_switch" ? "Your study track has been switched." : state.purpose === "ai_plan" ? "Your AI credits have been added." : "Your exam section is now unlocked."}</p>
             <Link to={dest}><Button className="mt-5">Continue</Button></Link></>
         ) : (
           <><Icon name="alert" size={40} className="mx-auto text-amber-600" /><h1 className="mt-3 text-lg font-semibold">Payment not completed</h1>

@@ -135,9 +135,6 @@ export function AIAssistPanel({ request, onClose }: { request: AssistRequest; on
             </>
           )}
         </div>
-        <footer className="ink-2 border-t line px-4 py-2 text-[11px] leading-snug">
-          AI answers can be wrong. Always check them against your approved notes. Don't enter personal or patient information.
-        </footer>
       </aside>
       {confirmNode}
       {report !== null && (

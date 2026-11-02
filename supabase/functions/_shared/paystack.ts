@@ -17,10 +17,10 @@ export function keyMode(secretKey: string): "test" | "live" | null {
 }
 
 /** Unique, unguessable transaction reference. */
-export function makeReference(purpose: "product" | "ai_plan"): string {
+export function makeReference(purpose: "product" | "ai_plan" | "track_switch"): string {
   const bytes = crypto.getRandomValues(new Uint8Array(8));
   const rand = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-  return `NMCN-${purpose === "product" ? "EX" : "AI"}-${Date.now().toString(36).toUpperCase()}-${rand.toUpperCase()}`;
+  return `NMCN-${purpose === "product" ? "EX" : purpose === "track_switch" ? "TR" : "AI"}-${Date.now().toString(36).toUpperCase()}-${rand.toUpperCase()}`;
 }
 
 export interface InitializeArgs {

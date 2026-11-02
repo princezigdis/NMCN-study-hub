@@ -26,14 +26,28 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menu, setMenu] = useState(false);
   const [unread, setUnread] = useState(0);
   const [banner, setBanner] = useState(false);
+  const [site, setSite] = useState<{ banner?: { visible?: boolean; text?: string; tone?: string }; maintenance?: { enabled?: boolean; message?: string } }>({});
 
   useEffect(() => {
     supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null)
       .then(({ count }) => setUnread(count ?? 0));
+    supabase.rpc("site_state").then(({ data }) => { if (data) setSite(data as typeof site); });
     supabase.from("feature_flags").select("enabled").eq("key", "maintenance_banner").maybeSingle()
       .then(({ data }) => setBanner(Boolean(data?.enabled)));
   }, [pathname]);
   useEffect(() => setMenu(false), [pathname]);
+
+  if (site.maintenance?.enabled && !isStaff) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6 text-center">
+        <div className="max-w-md">
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="mx-auto mb-4 h-12 w-12" />
+          <h1 className="text-xl font-bold">We'll be right back</h1>
+          <p className="ink-2 mt-2 text-sm">{site.maintenance.message || "We are making improvements and will be back shortly."}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen lg:pl-64">
@@ -55,9 +69,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="pt-4" />
           <NavLink to="/flashcards" className={(a) => navCls(a)}><Icon name="cards" size={18} />Flashcards</NavLink>
           <NavLink to="/planner" className={(a) => navCls(a)}><Icon name="calendar" size={18} />Study planner</NavLink>
+          <NavLink to="/videos" className={(a) => navCls(a)}><Icon name="video" size={18} />Procedure videos</NavLink>
           <NavLink to="/plans" className={(a) => navCls(a)}><Icon name="sparkles" size={18} />AI plans</NavLink>
           <NavLink to="/support" className={(a) => navCls(a)}><Icon name="quiz" size={18} />Help & support</NavLink>
           {isStaff && <NavLink to="/admin" className={(a) => navCls(a)}><Icon name="shield" size={18} />Admin console</NavLink>}
+          <div className="ink-2 flex flex-wrap gap-x-3 gap-y-1 px-3 pt-4 text-[11px]">
+            <Link to="/legal/terms" className="underline">Terms</Link><Link to="/legal/privacy" className="underline">Privacy</Link>
+            <Link to="/legal/credits" className="underline">Credits</Link><Link to="/legal/refunds" className="underline">Refunds</Link>
+          </div>
         </nav>
         <div className="border-t line p-3">
           <Link to="/profile" className="flex items-center gap-3 rounded-lg p-2 hover:bg-[var(--surface-2)]">
@@ -89,7 +108,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={() => setMenu((m) => !m)} className="rounded-lg p-2 hover:bg-[var(--surface-2)]" aria-label="Menu" aria-expanded={menu}><Icon name="menu" /></button>
           {menu && (
             <div className="surface absolute right-0 top-11 w-56 rounded-xl border line p-1 shadow-xl">
-              {[["/profile", "Profile"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/plans", "AI plans"], ["/support", "Help & support"]].map(([to, l]) => (
+              {[["/profile", "Profile"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/videos", "Procedure videos"], ["/plans", "AI plans"], ["/support", "Help & support"], ["/legal/terms", "Terms"], ["/legal/privacy", "Privacy"], ["/legal/credits", "Credit usage"], ["/legal/refunds", "Payments & refunds"]].map(([to, l]) => (
                 <Link key={to} to={to} className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--surface-2)]">{l}</Link>
               ))}
               {isStaff && <Link to="/admin" className="block rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 hover:bg-[var(--surface-2)]">Admin console</Link>}
@@ -100,6 +119,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <button onClick={signOut} className="hidden items-center gap-1 rounded-lg px-2 py-1.5 text-sm hover:bg-[var(--surface-2)] lg:inline-flex"><Icon name="logout" size={16} />Sign out</button>
       </header>
 
+      {site.banner?.visible && site.banner.text && (
+        <div role="status" className={cx("px-4 py-2 text-center text-sm", site.banner.tone === "warning" ? "bg-amber-100 text-amber-900 dark:bg-amber-900/50 dark:text-amber-100" : "bg-brand-50 text-brand-900 dark:bg-brand-900/50 dark:text-brand-100")}>{site.banner.text}</div>
+      )}
       {banner && <div className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-900 dark:bg-amber-900/50 dark:text-amber-100">Scheduled maintenance is in progress. Some features may be briefly unavailable.</div>}
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-5 sm:px-6 lg:pb-12">{children}</main>

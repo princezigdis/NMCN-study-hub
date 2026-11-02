@@ -13,6 +13,7 @@ export default function OnboardingPage() {
   const [name, setName] = useState(profile?.full_name ?? "");
   const [school, setSchool] = useState(profile?.institution ?? "");
   const [examDate, setExamDate] = useState(profile?.exam_target_date ?? "");
+  const [refCode, setRefCode] = useState(() => { try { return localStorage.getItem("nmcn_ref") ?? ""; } catch { return ""; } });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,10 @@ export default function OnboardingPage() {
     }).eq("id", profile!.id);
     setBusy(false);
     if (error) return setError(friendly(error));
+    if (refCode.trim()) {
+      try { await supabase.rpc("apply_referral", { p_code: refCode.trim() }); } catch { /* optional */ }
+      try { localStorage.removeItem("nmcn_ref"); } catch { /* ignore */ }
+    }
     await refreshProfile();
     navigate("/", { replace: true });
   };
@@ -35,7 +40,7 @@ export default function OnboardingPage() {
     <div className="mx-auto max-w-lg px-4 py-12">
       <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="mb-6 h-10 w-10" />
       <h1 className="text-2xl font-bold">Let's set up your study space</h1>
-      <p className="ink-2 mt-1 text-sm">You can change these later in your profile.</p>
+      <p className="ink-2 mt-1 text-sm">Your track (RN or RM) is locked once you continue, so choose carefully. Other details can be changed later.</p>
       <div className="mt-6 space-y-5">
         {error && <ErrorBox message={error} />}
         <div>
@@ -53,6 +58,7 @@ export default function OnboardingPage() {
         <Field label="Your name">{(id) => <Input id={id} value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />}</Field>
         <Field label="School / institution (optional)">{(id) => <Input id={id} value={school} onChange={(e) => setSchool(e.target.value)} maxLength={160} />}</Field>
         <Field label="Planned exam date (optional)" hint="We'll show a countdown and suggest a pace.">{(id) => <Input id={id} type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} />}</Field>
+        <Field label="Referral code (optional)">{(id) => <Input id={id} value={refCode} onChange={(e) => setRefCode(e.target.value.toUpperCase())} maxLength={16} />}</Field>
         <Button size="lg" className="w-full" onClick={save} loading={busy}>Start studying</Button>
       </div>
     </div>

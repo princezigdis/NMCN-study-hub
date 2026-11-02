@@ -7,6 +7,7 @@ import { Link } from "../../lib/router";
 import { supabase } from "../../lib/supabase";
 import { useAsync } from "../../lib/useAsync";
 import { must } from "./adminKit";
+import GrowthSettings from "./GrowthSettings";
 
 export default function AdminSettings() {
   const { can } = useAuth();
@@ -15,6 +16,7 @@ export default function AdminSettings() {
       <PageHeader title="Settings & roles" />
       {can("settings.manage") && <Flags />}
       {can("settings.manage") && <PaymentMode />}
+      {can("settings.manage") && <GrowthSettings />}
       {can("notifications.send") && <Broadcast />}
       {can("users.view") && <Staff />}
     </div>

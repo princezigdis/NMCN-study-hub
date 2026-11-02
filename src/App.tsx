@@ -4,6 +4,8 @@ import { AIProvider } from "./components/ai/AIContext";
 import { AppShell } from "./components/AppShell";
 import { Loading, ToastProvider } from "./components/ui";
 import { isConfigured } from "./lib/supabase";
+import VideosPage from "./pages/dashboard/VideosPage";
+import LegalPage from "./pages/legal/LegalPage";
 import { Navigate, Router, Routes, type RouteDef, useLocation } from "./lib/router";
 
 import AuthPage from "./pages/auth/AuthPage";
@@ -62,6 +64,10 @@ const shell = (el: ReactNode) => <RequireAuth><AIProvider><AppShell>{el}</AppShe
 const routes: RouteDef[] = [
   { path: "/auth", element: <AuthPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
+  { path: "/legal/terms", element: <LegalPage kind="terms" /> },
+  { path: "/legal/privacy", element: <LegalPage kind="privacy" /> },
+  { path: "/legal/credits", element: <LegalPage kind="credits" /> },
+  { path: "/legal/refunds", element: <LegalPage kind="refunds" /> },
   { path: "/onboarding", element: <RequireAuth><OnboardingPage /></RequireAuth> },
   { path: "/", element: shell(<HomePage />) },
   { path: "/library", element: shell(<LibraryPage />) },
@@ -83,6 +89,7 @@ const routes: RouteDef[] = [
   { path: "/notifications", element: shell(<NotificationsPage />) },
   { path: "/support", element: shell(<SupportPage />) },
   { path: "/my-notes", element: shell(<MyNotesPage />) },
+  { path: "/videos", element: shell(<VideosPage />) },
   { path: "/plans", element: shell(<PlansPage />) },
   { path: "/payment/callback", element: shell(<PaymentCallbackPage />) },
   { path: "/admin/*", element: <RequireAuth><Suspense fallback={<Loading />}><AdminApp /></Suspense></RequireAuth> },
