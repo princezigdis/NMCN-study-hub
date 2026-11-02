@@ -43,6 +43,10 @@ import SetupRequired from "./pages/SetupRequired";
 
 // The admin console is code-split: students never download it.
 const AdminApp = lazy(() => import("./pages/admin/AdminApp"));
+const Sim3DHomePage = lazy(() => import("./pages/sim3d/Sim3DPages").then((m) => ({ default: m.Sim3DHomePage })));
+const Sim3DProcedurePage = lazy(() => import("./pages/sim3d/Sim3DPages").then((m) => ({ default: m.Sim3DProcedurePage })));
+const Sim3DPlayPage = lazy(() => import("./pages/sim3d/Sim3DPages").then((m) => ({ default: m.Sim3DPlayPage })));
+const lz = (el: ReactNode) => <Suspense fallback={<Loading label="Loading the 3D lab…" />}>{el}</Suspense>;
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { loading, session, profile } = useAuth();
@@ -91,6 +95,9 @@ const routes: RouteDef[] = [
   { path: "/viva/progress", element: shell(<VivaProgressPage />) },
   { path: "/viva/session/:id", element: shell(<VivaSessionPage />) },
   { path: "/viva/report/:id", element: shell(<VivaReportPage />) },
+  { path: "/sim3d", element: shell(lz(<Sim3DHomePage />)) },
+  { path: "/sim3d/procedure/:id", element: shell(lz(<Sim3DProcedurePage />)) },
+  { path: "/sim3d/play/:id", element: shell(lz(<Sim3DPlayPage />)) },
   { path: "/caosce", element: shell(<CaosceHomePage />) },
   { path: "/caosce/library", element: shell(<CaosceLibraryPage />) },
   { path: "/caosce/procedure/:id", element: shell(<CaosceProcedurePage />) },

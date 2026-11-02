@@ -46,6 +46,7 @@ const PATHS: Record<string, string> = {
   arrowUp: "M12 19V5M5 12l7-7 7 7",
   arrowDown: "M12 5v14M19 12l-7 7-7-7",
   activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+  cube: "M12 2 3 7v10l9 5 9-5V7zM3 7l9 5 9-5M12 12v10",
   grip: "M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01",
 };
 

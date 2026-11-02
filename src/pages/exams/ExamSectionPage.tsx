@@ -14,6 +14,7 @@ const COPY = {
     benefits: [
       { title: "Papers 1–3", body: "Timed objective papers of 250 questions each, marked automatically, with the timer kept on the server." },
       { title: "Paper 4: viva and CAOSCE practice", body: "Practice stations for oral and clinical objective structured examinations, with marking guides." },
+      { title: "3D CAOSCE Lab", body: "A live 3D ward where you rotate around the bed, pick equipment, position the patient and perform procedures step by step, with guided, free-practice and timed exam modes and a marked checklist." },
       { title: "Rationales for every option", body: "After each paper, review every question with a rationale for each option (A, B, C and D)." },
       { title: "Never lose your place", body: "If your connection drops mid-paper, your progress and exact timer are saved so you can resume." },
       { title: "Performance by topic", body: "Instant results by course and topic, so you can see your weak areas straight away." },
@@ -23,6 +24,7 @@ const COPY = {
     features: [
       "Papers 1–3: timed objective papers with automatic marking",
       "Paper 4: viva and CAOSCE-style practice stations with marking guides",
+      "3D CAOSCE Lab: interactive 3D clinical simulation with scored procedures",
       "Results by topic and full answer review with rationales",
       "Resume if your connection drops; the timer is kept on the server",
     ],
@@ -30,6 +32,7 @@ const COPY = {
   D: {
     benefits: [
       { title: "Full-length final-exam simulations", body: "Timed papers of 250 questions each, with the countdown kept on the server so you can resume if your connection drops." },
+      { title: "3D CAOSCE Lab", body: "A live 3D ward where you rotate around the bed, pick equipment, position the patient and perform procedures step by step, with guided, free-practice and timed exam modes and a marked checklist." },
       { title: "Readiness indicator", body: "See how ready you are, based on your scores across your attempts." },
       { title: "Weak-topic analysis", body: "Your most-missed topics are surfaced so you know exactly what to revise before the real exam." },
       { title: "Fresh papers every time", body: "Questions are drawn at random and options are shuffled on every attempt, so you practise real recall instead of memorising positions." },
@@ -42,6 +45,7 @@ const COPY = {
       "Full-length timed papers with server-side scoring",
       "Weak-topic analysis and a readiness indicator from your results",
       "Viva and CAOSCE-style practice where configured",
+      "3D CAOSCE Lab: interactive 3D clinical simulation with scored procedures",
     ],
   },
 } as const;

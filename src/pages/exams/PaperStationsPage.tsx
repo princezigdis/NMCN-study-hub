@@ -42,6 +42,12 @@ function ExamStart() {
           <Button loading={busy === "caosce"} onClick={() => go("caosce", () => caosce.examStartRandom(), "/caosce/exam")}>Start CAOSCE</Button>
         </div>
       </Card>
+      <Card className="sm:col-span-2">
+        <Icon name="cube" className="mb-2 text-brand-600" />
+        <h2 className="font-semibold">3D CAOSCE Lab</h2>
+        <p className="ink-2 mt-1 text-sm">Step into a live 3D ward. Rotate around the bed, choose your equipment from the trolley, position the patient, select the correct site and perform each step. Practise with guidance, or take the timed exam and get a marked checklist.</p>
+        <div className="mt-4"><Link to="/sim3d"><Button>Open the 3D lab</Button></Link></div>
+      </Card>
     </div>
   );
 }
