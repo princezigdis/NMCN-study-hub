@@ -14,6 +14,13 @@ const SECTIONS: Array<{ to: string; letter: string; label: string; short: string
   { to: "/dashboard", letter: "E", label: "My Dashboard", short: "Me", icon: "chart" },
 ];
 
+const BOTTOM_TABS: Array<{ to: string; label: string; icon: IconName }> = [
+  { to: "/", label: "Home", icon: "home" },
+  { to: "/flashcards", label: "Flashcards", icon: "cards" },
+  { to: "/plans", label: "AI Plan", icon: "sparkles" },
+  { to: "/procedure-videos", label: "Videos", icon: "video" },
+];
+
 export function toggleTheme() {
   const dark = document.documentElement.classList.toggle("dark");
   try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch { /* storage unavailable */ }
@@ -115,7 +122,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={() => setMenu((m) => !m)} className="rounded-lg p-2 hover:bg-[var(--surface-2)]" aria-label="Menu" aria-expanded={menu}><Icon name="menu" /></button>
           {menu && (
             <div className="surface absolute right-0 top-11 w-56 rounded-xl border line p-1 shadow-xl">
-              {[["/profile", "Profile"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/videos", "Procedure videos"], ["/plans", "AI plans"], ["/support", "Help & support"], ["/legal/terms", "Terms"], ["/legal/privacy", "Privacy"], ["/legal/credits", "Credit usage"], ["/legal/refunds", "Payments & refunds"]].map(([to, l]) => (
+              {[["/profile", "Profile"], ["/library", "A · Study Library"], ["/practice", "B · Question Bank"], ["/mock", "C · Mock Exam"], ["/final", "D · Final Exam"], ["/dashboard", "E · My Dashboard"], ["/flashcards", "Flashcards"], ["/planner", "Study planner"], ["/videos", "Procedure videos"], ["/plans", "AI plans"], ["/support", "Help & support"], ["/legal/terms", "Terms"], ["/legal/privacy", "Privacy"], ["/legal/credits", "Credit usage"], ["/legal/refunds", "Payments & refunds"]].map(([to, l]) => (
                 <Link key={to} to={to} className="block rounded-lg px-3 py-2 text-sm hover:bg-[var(--surface-2)]">{l}</Link>
               ))}
               {isStaff && <Link to="/admin" className="block rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 hover:bg-[var(--surface-2)]">Admin console</Link>}
@@ -134,11 +141,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-5 sm:px-6 lg:pb-12">{children}</main>
 
       {/* Mobile bottom tabs */}
-      <nav className="surface fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t line safe-bottom lg:hidden" aria-label="Sections">
-        {SECTIONS.map((s) => (
-          <NavLink key={s.to} to={s.to} className={(a) => cx("flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", a ? "text-brand-700 dark:text-brand-300" : "ink-2")}>
-            <Icon name={s.icon} size={22} />
-            <span>{s.letter} · {s.short}</span>
+      <nav className="surface fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t line safe-bottom lg:hidden" aria-label="Main">
+        {BOTTOM_TABS.map((t) => (
+          <NavLink key={t.to} to={t.to} exact={t.to === "/"} className={(a) => cx("flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", a ? "text-brand-700 dark:text-brand-300" : "ink-2")}>
+            <Icon name={t.icon} size={22} />
+            <span>{t.label}</span>
           </NavLink>
         ))}
       </nav>

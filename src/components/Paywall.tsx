@@ -6,9 +6,11 @@ import { Icon } from "./Icon";
 import { Button, Card, useToast } from "./ui";
 
 /** Shown when a paid section isn't unlocked. Prices always come from the server. */
-export function Paywall({ product, features }: {
+export function Paywall({ product, features, benefitsTitle, benefits }: {
   product: { code: string; name: string; price_kobo: number; access_days: number | null; description: string | null } | null;
   features: string[];
+  benefitsTitle?: string;
+  benefits?: Array<{ title: string; body: string }>;
 }) {
   const toast = useToast();
   const [busy, setBusy] = useState(false);
@@ -40,6 +42,22 @@ export function Paywall({ product, features }: {
         </ul>
         <Button size="lg" className="w-full" onClick={buy} loading={busy}>Unlock for {naira(product.price_kobo)}</Button>
         <p className="ink-2 mt-3 text-center text-xs">Secure payment by Paystack (card, bank transfer, USSD). Access unlocks automatically once payment is confirmed.</p>
+        {benefits && benefits.length > 0 && (
+          <details className="group surface-2 mt-4 rounded-xl border line">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 text-sm font-semibold text-brand-800 dark:text-brand-200">
+              {benefitsTitle ?? "See full benefits"}
+              <span className="text-lg leading-none transition-transform group-open:rotate-45" aria-hidden>+</span>
+            </summary>
+            <ul className="space-y-3 border-t line px-4 py-3 text-sm">
+              {benefits.map((b) => (
+                <li key={b.title} className="flex gap-2">
+                  <Icon name="checkCircle" size={18} className="mt-0.5 shrink-0 text-brand-600" />
+                  <span><span className="font-semibold">{b.title}.</span> <span className="ink-2">{b.body}</span></span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
       </div>
     </Card>
   );

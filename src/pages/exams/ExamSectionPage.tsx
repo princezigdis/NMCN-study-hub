@@ -11,6 +11,13 @@ import { useAsync } from "../../lib/useAsync";
 
 const COPY = {
   C: {
+    benefits: [
+      { title: "Papers 1–3", body: "Timed objective papers of 250 questions each, marked automatically, with the timer kept on the server." },
+      { title: "Paper 4: viva and CAOSCE practice", body: "Practice stations for oral and clinical objective structured examinations, with marking guides." },
+      { title: "Rationales for every option", body: "After each paper, review every question with a rationale for each option (A, B, C and D)." },
+      { title: "Never lose your place", body: "If your connection drops mid-paper, your progress and exact timer are saved so you can resume." },
+      { title: "Performance by topic", body: "Instant results by course and topic, so you can see your weak areas straight away." },
+    ],
     eyebrow: "Section C", title: "Mock Examination",
     subtitle: "Timed practice in the Papers 1–4 format: objective papers plus viva and CAOSCE-style stations.",
     features: [
@@ -21,6 +28,13 @@ const COPY = {
     ],
   },
   D: {
+    benefits: [
+      { title: "Full-length final-exam simulations", body: "Timed papers of 250 questions each, with the countdown kept on the server so you can resume if your connection drops." },
+      { title: "Readiness indicator", body: "See how ready you are, based on your scores across your attempts." },
+      { title: "Weak-topic analysis", body: "Your most-missed topics are surfaced so you know exactly what to revise before the real exam." },
+      { title: "Fresh papers every time", body: "Questions are drawn at random and options are shuffled on every attempt, so you practise real recall instead of memorising positions." },
+      { title: "AI explanations", body: "Tap Explain with AI on any question during your review to get a deeper breakdown." },
+    ],
     eyebrow: "Section D", title: "Final Examination Simulator",
     subtitle: "Full-length final-exam simulations with their own question pools, separate from Section C.",
     features: [
@@ -47,10 +61,11 @@ export default function ExamSectionPage({ section }: { section: "C" | "D" }) {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_340px]">
           <Card>
             <h2 className="font-semibold">What's included</h2>
-            <p className="ink-2 mt-2 text-sm">These are practice simulations designed around the published examination structure. They are not official NMCN examinations, and your scores here don't guarantee any result in the real exam.</p>
+            <p className="ink-2 mt-2 text-sm">These are practice simulations designed around the published examination structure, built from NMCN past-question material and exam-style questions, to help you prepare for the real exam.</p>
+            {section === "C" && <p className="ink-2 mt-2 text-sm">Section C is packed with NMCN past-question material from across the years, and it helps a lot.</p>}
             {section === "D" && <p className="ink-2 mt-2 text-sm">Section D is a separate purchase from Section C.</p>}
           </Card>
-          <Paywall product={data.product} features={[...copy.features]} />
+          <Paywall product={data.product} features={[...copy.features]} benefitsTitle={`See Full Benefits of Section ${section}`} benefits={[...copy.benefits]} />
         </div>
       ) : (
         <div className="space-y-6">
