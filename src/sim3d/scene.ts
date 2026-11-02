@@ -7,13 +7,13 @@ import type { CameraPreset, EquipInfo, PickInfo, Quality, SceneData } from "./ty
 
 type V3 = [number, number, number];
 const PRESETS: Record<CameraPreset, { p: V3; t: V3 }> = {
-  overview: { p: [3.4, 2.5, 3.6], t: [0, 0.9, 0.2] },
-  patient: { p: [1.7, 1.7, 1.3], t: [0, 0.95, 0.1] },
+  overview: { p: [3.6, 2.7, 4.0], t: [0, 0.85, 0.1] },
+  patient: { p: [2.1, 2.0, 2.5], t: [0, 0.9, 0.15] },
   head: { p: [0.2, 1.7, -2.3], t: [0, 0.95, -0.1] },
-  foot: { p: [0.2, 1.6, 2.9], t: [0, 0.95, 0.2] },
+  foot: { p: [0.3, 2.2, 3.2], t: [0, 0.9, 0.2] },
   top: { p: [0.01, 4.2, 0.3], t: [0, 0.9, 0.25] },
   sink: { p: [-0.6, 1.7, 2.0], t: [-2.9, 1.0, 0.8] },
-  trolley: { p: [2.4, 1.9, 2.5], t: [1.3, 0.9, 0.7] },
+  trolley: { p: [3.0, 1.9, 1.6], t: [1.55, 0.9, -0.1] },
 };
 const DPR: Record<Quality, number> = { low: 1, medium: 1.5, high: 2 };
 const SHADOW: Record<Quality, number> = { low: 0, medium: 1024, high: 2048 };
@@ -77,7 +77,7 @@ export class ClinicalScene {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: opts.quality !== "low", powerPreference: "high-performance" });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
+    this.renderer.toneMappingExposure = 0.85;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.pmrem = new THREE.PMREMGenerator(this.renderer);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.05, 40);
@@ -93,7 +93,7 @@ export class ClinicalScene {
     this.controls.screenSpacePanning = false;
     this.controls.listenToKeyEvents(canvas);
     this.controls.addEventListener("change", () => this.invalidate());
-    this.sun = new THREE.DirectionalLight(0xfff4e6, 2.2);
+    this.sun = new THREE.DirectionalLight(0xfff4e6, 2.0);
     this.ro = new ResizeObserver(() => this.resize());
   }
 
@@ -110,7 +110,7 @@ export class ClinicalScene {
     const sc = this.scene;
     sc.background = new THREE.Color(0xdfe8ee);
     this.progress("Setting up lighting", 5);
-    sc.add(new THREE.HemisphereLight(0xffffff, 0x9fb0bd, 0.9));
+    sc.add(new THREE.HemisphereLight(0xffffff, 0x9fb0bd, 0.55));
     this.sun.position.set(2.5, 5, 2.5);
     this.sun.shadow.camera.left = -4; this.sun.shadow.camera.right = 4;
     this.sun.shadow.camera.top = 4; this.sun.shadow.camera.bottom = -4;
@@ -130,7 +130,8 @@ export class ClinicalScene {
     this.buildCurtains();
     await nextFrame();
     this.progress("Preparing the patient", 65);
-    this.mannequin.root.position.set(0, 0.97, 0.2);
+    this.mannequin.root.scale.setScalar(0.9);
+    this.mannequin.root.position.set(0, 0.96, 0.12);
     sc.add(this.mannequin.root);
     this.pickables.push(this.mannequin.body);
     this.blanket = bx(1.0, 0.05, 1.05, std(0x9ccfb8, { r: 0.9 }), 0, 1.13, 0.62);
@@ -156,8 +157,8 @@ export class ClinicalScene {
     c.width = c.height = 256;
     const g = c.getContext("2d");
     if (g) {
-      g.fillStyle = "#d5dde1"; g.fillRect(0, 0, 256, 256);
-      g.strokeStyle = "#b9c4ca"; g.lineWidth = 3;
+      g.fillStyle = "#bfcad0"; g.fillRect(0, 0, 256, 256);
+      g.strokeStyle = "#a3b1b9"; g.lineWidth = 3;
       for (let i = 0; i <= 256; i += 128) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 256); g.stroke(); g.beginPath(); g.moveTo(0, i); g.lineTo(256, i); g.stroke(); }
     }
     const tex = new THREE.CanvasTexture(c);
@@ -168,7 +169,7 @@ export class ClinicalScene {
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(6.4, 6.4), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.35, metalness: 0.05 }));
     floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, 0.3); floor.receiveShadow = true;
     sc.add(floor);
-    const wallM = () => new THREE.MeshStandardMaterial({ color: 0xeef3f6, roughness: 0.9 });
+    const wallM = () => new THREE.MeshStandardMaterial({ color: 0xdde8ec, roughness: 0.9 });
     const mk = (w: number, h: number, x: number, y: number, z: number, ry: number, rx = 0) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallM());
       m.position.set(x, y, z); m.rotation.y = ry; m.rotation.x = rx; m.receiveShadow = true; sc.add(m);
@@ -234,7 +235,7 @@ export class ClinicalScene {
     iv.add(cy(0.2, 0.2, 0.03, std(0x888f95, { m: 0.6 }), 0, 0.02, 0));
     iv.add(bx(0.5, 0.02, 0.02, std(0xc7ced4, { m: 0.8 }), 0, 1.9, 0));
     iv.add(cy(0.05, 0.05, 0.2, std(0xdfeef5, { a: 0.6 }), 0.2, 1.75, 0));
-    iv.position.set(0.85, 0, -0.75);
+    iv.position.set(-0.85, 0, -0.78);
     this.reg("iv_stand", "IV stand", iv);
   }
 
@@ -303,7 +304,7 @@ export class ClinicalScene {
       t.add(cy(0.015, 0.015, 0.85, steel, sx * 0.45, 0.43, sz * 0.28));
       t.add(cy(0.04, 0.04, 0.03, std(0x222222), sx * 0.45, 0.04, sz * 0.28));
     }
-    t.position.set(1.35, 0, 0.7);
+    t.position.set(1.55, 0, -0.1);
     this.reg("trolley", "Procedure trolley", t);
     this.trolleyTop.position.set(0, 0.87, 0);
     t.add(this.trolleyTop);

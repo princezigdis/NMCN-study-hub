@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useAsync } from "../../lib/useAsync";
 import { friendly } from "../../lib/errors";
 import { supabase } from "../../lib/supabase";
@@ -7,7 +7,8 @@ import { labAdmin, type J } from "../../lib/lab";
 import { useAuth } from "../../auth/AuthProvider";
 import { Badge, Button, Card, EmptyState, ErrorBox, Field, Input, Loading, PageHeader, Select, Stat, Tabs, Textarea, useConfirm, useToast } from "../../components/ui";
 
-type Tab = "review" | "viva" | "procedures" | "videos" | "content" | "analytics";
+type Tab = "review" | "viva" | "procedures" | "videos" | "content" | "analytics" | "sim3d";
+const AdminSim3D = lazy(() => import("./AdminSim3D"));
 const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 const tone = (s: string) => (s === "published" ? "success" : s === "draft" ? "warning" : "neutral") as "success" | "warning" | "neutral";
 
@@ -277,13 +278,14 @@ export default function AdminLab() {
   return (
     <div>
       <PageHeader title="Viva and CAOSCE lab" subtitle="Review, edit and publish clinical practice content. Content is for revision and always needs tutor review." />
-      <Tabs<Tab> tabs={[{ id: "review", label: "Review & publish" }, { id: "viva", label: "Viva" }, { id: "procedures", label: "Procedures" }, { id: "videos", label: "Videos" }, { id: "content", label: "Exams & questions" }, { id: "analytics", label: "Analytics" }]} value={tab} onChange={setTab} />
+      <Tabs<Tab> tabs={[{ id: "review", label: "Review & publish" }, { id: "viva", label: "Viva" }, { id: "procedures", label: "Procedures" }, { id: "videos", label: "Videos" }, { id: "content", label: "Exams & questions" }, { id: "analytics", label: "Analytics" }, { id: "sim3d", label: "3D lab" }]} value={tab} onChange={setTab} />
       {tab === "review" && <ReviewTab reviewer={reviewer} setReviewer={setReviewer} />}
       {tab === "viva" && <VivaTab reviewer={reviewer} />}
       {tab === "procedures" && <ProceduresTab reviewer={reviewer} />}
       {tab === "videos" && <VideosTab reviewer={reviewer} />}
       {tab === "content" && <ContentTab reviewer={reviewer} />}
       {tab === "analytics" && <AnalyticsTab />}
+      {tab === "sim3d" && <Suspense fallback={<Loading />}><AdminSim3D /></Suspense>}
     </div>
   );
 }

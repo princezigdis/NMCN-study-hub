@@ -30,7 +30,7 @@ const ANCHORS: Record<string, [Parent, number, number, number]> = {
   wound: ["shinL", 0, 0.055, 0.18], leg_right: ["shinR", 0, 0.055, 0.18], leg_left: ["shinL", 0, 0.055, 0.18],
 };
 
-const skin = () => new THREE.MeshStandardMaterial({ color: 0xe0c9b3, roughness: 0.55, metalness: 0.02 });
+const skin = () => new THREE.MeshStandardMaterial({ color: 0xd2ab8b, roughness: 0.5, metalness: 0.02 });
 const SKIN = skin();
 const JOINT = new THREE.MeshStandardMaterial({ color: 0xb9a590, roughness: 0.5 });
 
