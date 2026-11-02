@@ -13,6 +13,8 @@ export default function FlashcardsPage() {
   const [deck, setDeck] = useState("");
   const [editing, setEditing] = useState<Partial<Flashcard> | null>(null);
   const cards = useAsync(async () => {
+    // Give every student the ready-made starter decks for their programme (once; safe to repeat).
+    try { await supabase.rpc("claim_starter_flashcards"); } catch { /* starter decks are a bonus; never block the page */ }
     const { data, error } = await supabase.from("flashcards").select("*").order("due_at");
     if (error) throw error;
     return data as Flashcard[];
